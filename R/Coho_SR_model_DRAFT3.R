@@ -6,13 +6,14 @@
 require(rjags)
 require(R2jags)
 library(runjags)
-
+library(here)
+library(bayestestR) #for hdi()
 
 thinning <- 200
 samples <- 1500
 n_chains <- 4
 
-SR.dat<-read.table("Data/Coho_Brood_MASTER.txt", header=T)
+SR.dat<-read.table(here("Data/Coho_Brood_MASTER.txt"), header=T)
 SR.dat<-subset(SR.dat,SR.dat$year<2017)
 
 SR.dat$logRS1<-log(SR.dat$RS_E)
@@ -104,7 +105,7 @@ for (i in 1:n.pops){
 
 ## I grouped rivers and smiths inlet with Area 7 & 8
 
-co_pops<-read.table("Data/coho_groups.txt",header=TRUE)
+co_pops<-read.table(here("Data/coho_groups.txt"),header=TRUE)
 co_pops$mean_total<-NA
 
 for(i in 1:52){
@@ -160,14 +161,14 @@ init_fx <- function(chain_id)
 
 variables <- c("spawners","beta","mu_lalpha","lalpha","ln_alpha.mu")#,"beta","tau.alpha","sigma.alpha","tau","sigma") # these are the variables to keep track of
 
-temp3B <- jags.model(file="JAGS/model_fitting tr1.jags", data=datamcmc2 ,n.chains = n_chains, n.adapt=50000, quiet=FALSE,inits=init_fx)#, inits=inits)
+temp3B <- jags.model(file=here("JAGS/model_fitting tr1.jags"), data=datamcmc2 ,n.chains = n_chains, n.adapt=50000, quiet=FALSE,inits=init_fx)#, inits=inits)
 update(temp3B, n.iter = 75000)  # burnin
 resultSR_B3<-coda.samples(model=temp3B, variable.names=variables, n.iter=thinning*samples, thin = thinning) 
 
 mcmc_names <- colnames(resultSR_B3[[1]])
 plot(resultSR_B3[,grep("mu_lalpha",mcmc_names)[1:4]])
 SR.results_B3<-summary(resultSR_B3)
-converg.test<-gelman.diag(resultSR_B3[,grep("spawners",mcmc_names)])
+#converg.test<-gelman.diag(resultSR_B3[,grep("spawners",mcmc_names)]) ##breaks
 converg.test<-gelman.diag(resultSR_B3[,grep("mu_lalpha",mcmc_names)])
 converg.test<-gelman.diag(resultSR_B3[,grep("lalpha",mcmc_names)])
 converg.test<-gelman.diag(resultSR_B3[,grep("ln_alpha.mu",mcmc_names)])
@@ -179,7 +180,7 @@ neff_test<-coda::effectiveSize(resultSR_B3[,grep("lalpha",mcmc_names)])
 neff_test<-coda::effectiveSize(resultSR_B3[,grep("ln_alpha.mu",mcmc_names)])
 
 saveRDS(resultSR_B3,file="Results/COSR3B.tr1_lalpha_MCMC.rds")
-resultSR_B3<-readRDS("Results/COSR3B.tr1_lalpha_MCMC.rds")
+resultSR_B3<-readRDS(here("Results/COSR3B.tr1_lalpha_MCMC.rds"))
 mcmc_names <- colnames(resultSR_B3[[1]])
 SR.results_B3<-summary(resultSR_B3)
 
