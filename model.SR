@@ -1,0 +1,31 @@
+
+    model{
+    
+    ## Stock-recruit component
+    for(i in 1:Npops){
+      beta[i] <- 1/Smax[i]
+      Smax[i] ~ dlnorm(Smax.p[i],1/(Smax.tau[i]^2))
+        for(t in 1:yrs.dat[i]) {
+          logRS[t,i] ~ dnorm(mu.y[t,i], tau)
+          mu.y[t,i] <- lalpha[t,i] - beta[i] * spawners[t,i]
+          lalpha[t,i] ~ dnorm(mu_lalpha[t,group[i]], tau.alpha[group[i]])
+        }
+    }
+    for(k in 1:Kgroups)
+    {
+    tau.alpha[k] <- pow(sigma_alpha[k],-2)
+    sigma_alpha[k] ~ dunif(0,25)
+    }
+    
+    mu_lalpha[1,1:Kgroups] ~ dmnorm(init_lalpha,tauMVN) # initialize the log-alpha 6x6 matrix
+    for(z in 2:n.years)
+    {
+    mu_lalpha[z,1:Kgroups] ~ dmnorm(mu_lalpha[z-1,1:Kgroups],tauMVN) # make log-alpha recursive, and correlated to each group
+    #mu_alpha[z,1:Kgroups] <- exp(mu_lalpha[z,1:Kgroups]) # global median alphas for each of the 6 groups
+    }
+    tauMVN ~ dwish(covarGroups,Kgroups+1)
+    sigmaGroups <- inverse(tauMVN)
+    tau <- pow(sigma, -2)
+    sigma ~ dunif(0, 25)
+    
+    }

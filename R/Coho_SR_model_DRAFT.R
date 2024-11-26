@@ -5,9 +5,9 @@
 #setwd("C:/data/centralcoast")
 require(rjags)
 require(R2jags)
+library(here)
 
-
-SR.dat<-read.table("coho central coast/Coho_Brood_MASTER.txt", header=T)
+SR.dat<-read.table(here("Data/Coho_Brood_MASTER.txt"), header=T)
 SR.dat<-subset(SR.dat,SR.dat$year<2017)
 
 SR.dat$logRS1<-log(SR.dat$RS_E)
@@ -168,8 +168,8 @@ variables <- c("Smax","alpha","alpha.mu","mu.alpha","beta","tau.alpha","tau.a1")
 
 temp1 <- jags.model(file="model.SR", data=datamcmc2 ,
                    n.chains = 3, n.adapt=1000, quiet=FALSE)#, inits=inits)
-update(temp, n.iter = 10000)  # burnin
-resultSR_E1<-coda.samples(model=temp, variable.names=variables , n.iter=30000,n.thin=5) 
+update(temp1, n.iter = 10000)  # burnin
+resultSR_E1<-coda.samples(model=temp1, variable.names=variables , n.iter=30000,n.thin=5) 
 SR.results_E1<-summary(resultSR_E1)
 
 plot(resultSR_E1[,1464:1515])
@@ -183,7 +183,7 @@ saveRDS(SR.results_E1,file="COSR1_MCMC.rds")
 
 
 
-SR.resultsA$quantiles[1500:1568,]
+SR.resultsA$quantiles[1500:1568,] #wtf should this be?
 
 #######################################################################
 #########################################################################
@@ -296,8 +296,8 @@ uci75_E<-mu_alpha2[,4]
 lci75_E<-mu_alpha2[,2]
 
 x <- c(1980:2016, 2016:1980)
-y1_E <- c(lci95,rev(uci95))
-y2_E <- c(lci75,rev(uci75))
+y1_E <- c(lci95_E,rev(uci95_E))
+y2_E <- c(lci75_E,rev(uci75_E))
 
 
 plot(1,1,cex=0,axes=FALSE, xlab="",ylab="log(alpha)",xlim=c(1980,2016),ylim=c(0,6))
@@ -413,14 +413,14 @@ mu_alpha2B<-SR.results_B2$quantiles[1568:(1568+36),] ## time-varying hierachical
 
 #################################################
 ##### Model 3 - hierarchical model w/time-variant (recursive) alphas and uninformative priors
-###   with reginal hyper priors mu.alpha which is also time varying, estimating overall change in productivity 
+###   with regional hyper priors mu.alpha which is also time varying, estimating overall change in productivity 
 ###   for each population group
 
 ####   The next step would be to add a covariance matrix between annual productivities
 
-## I grouped rivrs and smiths inlet with Area 7 & 8
+## I grouped rivers and smiths inlet with Area 7 & 8
 
-co_pops<-read.table("coho central coast/coho_groups.txt",header=TRUE)
+co_pops<-read.table(here("Data/coho_groups.txt"),header=TRUE)
 
 ### lumping Rivers Smith Inlet with Area 7-8
 co_pops[which(co_pops$group==7),4]<-6
