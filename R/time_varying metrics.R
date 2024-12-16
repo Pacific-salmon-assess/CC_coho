@@ -62,10 +62,10 @@ ggplot(df_summ[df_summ$Metric%in%c("Sgen","Smsy","Umsy"),],aes(x=year,y=value,co
   theme(legend.position="top")
 
 df_wide <- tidyr::pivot_wider(df_full,names_from="Metric",values_from="Value")
-df_wide$U <- df_wide$Ut/df_wide$Umsy
+df_wide$U_relative <- df_wide$Ut/df_wide$Umsy
 df_agg <- df_wide %>%
   group_by(year,region,Model) %>%
-  summarise(value=mean(U),Ut=mean(Umsy))
+  summarise(value=mean(U_relative),Ut=mean(Umsy))
 df_agg$region <- factor(df_agg$region,levels=group_names)
 
 
@@ -94,3 +94,28 @@ ggplot(df_agg,aes(x=year,y=Ut,colour=Model,fill=Model))+
   scale_colour_brewer(type="qual",palette=2,direction = -1) +
   theme(legend.position="top",strip.text.y = element_text(size=6.5),strip.text.x = element_text(size=8),axis.text.x=element_text(size=7,angle=45,hjust=1),axis.text.y=element_text(size=7),legend.text=element_text(size=8),legend.title=element_text(size=8),axis.title=element_text(size=8),legend.key.size = unit(0.9, "line"),panel.spacing.y = unit(0.75, "lines"))
 ggsave("Figures/time-varying umsy.jpeg",width=6,height=6,units="in",dpi=800)
+
+Umsy_reg_tv <- readRDS("Results/time_varying_regional_UMSY.rds")
+Umsy_reg_tv$Model <- "Time-varying"
+Umsy_reg <- readRDS("Results/Umsy_reg.rds")
+Umsy_static <- expand.grid(Year=1980:2016,"Region"=unique(Umsy_reg$Region),"Metric"="Umsy",Model="Equilibrium")
+Umsy_static$Value <- Umsy_reg$mean[match(Umsy_static$Region,Umsy_reg$Region)]
+
+Umsy_reg_full <- bind_rows(Umsy_reg_tv,Umsy_static)
+
+Umsy_reg_full$Region <- factor(Umsy_reg_full$Region,levels=group_names)
+
+ggplot(Umsy_reg_full,aes(x=Year,y=Value,colour=Model,fill=Model))+
+  geom_line()+
+  geom_point(data=Umsy_reg_full[Umsy_reg_full$Model=="Time-varying",],aes(x=Year,y=Value,fill=Model))+
+  facet_wrap(~Region,ncol=3,labeller=label_wrap_gen(width=15,multi_line = TRUE)) +
+  theme_minimal() +
+  ylab("Regional average U(MSY)")+xlab("Year")+
+  #coord_flip(clip = "off") +
+  #guides(fill = guide_legend(override.aes = list(size=2)))+
+  scale_fill_brewer(type="qual",palette=2,direction = -1) +
+  scale_colour_brewer(type="qual",palette=2,direction = -1) +
+  theme(legend.position="top",strip.text.y = element_text(size=6.5),strip.text.x = element_text(size=8),axis.text.x=element_text(size=7,angle=45,hjust=1),axis.text.y=element_text(size=7),legend.text=element_text(size=8),legend.title=element_text(size=8),axis.title=element_text(size=8),legend.key.size = unit(0.9, "line"),panel.spacing.y = unit(0.75, "lines"))
+ggsave("Figures/time-varying regional umsy.jpeg",width=6,height=6,units="in",dpi=800)
+write.csv(Umsy_reg_full,file="Results/UMSY_regional.csv")
+write.csv(df_wide,file="Results/coho time series and MSY reference points.csv")

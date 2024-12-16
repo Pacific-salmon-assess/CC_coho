@@ -96,6 +96,32 @@ for(t in 1:n.years)
   }
 }
 
+Umsy_reg<-matrix(data=NA,nrow=samples,ncol=6)
+for (k in 1:6){
+  samp.chain<-sample(1:n_chains,samples,replace=TRUE)
+  samp.MCMC<-sample(1:samples, samples, replace=FALSE)
+  
+  for (i in 1:samples){
+    match(paste("mu_lalpha[",1:37,",",k,"]",sep=""),mcmc_names)
+    alpha_reg <- mean(resultSR_B3[[samp.chain[i]]][samp.MCMC[i],match(paste("mu_lalpha[",1:37,",",k,"]",sep=""),mcmc_names)])
+    Umsy_reg[i,k] <- 1 -gsl::lambert_W0(exp(1-alpha_reg))
+  }
+}
+
+Umsy_reg_t<-array(data=NA,dim=c(samples,6,n.years))
+for(t in 1:n.years)
+{
+  for (k in 1:6){
+    samp.chain<-sample(1:n_chains,samples,replace=TRUE)
+    samp.MCMC<-sample(1:samples, samples, replace=FALSE)
+    
+    for (i in 1:samples){
+      alpha_reg <- resultSR_B3[[samp.chain[i]]][samp.MCMC[i],match(paste("mu_lalpha[",t,",",k,"]",sep=""),mcmc_names)]
+      Umsy_reg_t[i,k,t] <- max(0,1 -gsl::lambert_W0(exp(1-alpha_reg)))
+    }
+  }
+}
+
 Smsy_priors <- apply(Smsy,2,FUN=function(x){c(mean(x),sd(x))})
 Smsy_priors <- data.frame("pop"=1:n.pops,"mean"=Smsy_priors[1,],"tau"=1/(Smsy_priors[2,]^2))
 Sgen_priors <- apply(Sgen,2,FUN=function(x){c(mean(x),sd(x))})
@@ -105,15 +131,26 @@ Umsy_priors <- data.frame("pop"=1:n.pops,"mean"=Umsy_priors[1,],"tau"=1/(Umsy_pr
 saveRDS(Smsy_priors,"Results/Smsy.rds")
 saveRDS(Sgen_priors,"Results/Sgen.rds")
 saveRDS(Umsy_priors,"Results/Umsy.rds")
+group_names <- c("Central Coast (South)","Hecate Lowlands","Inner Waters","Haida Gwaii","Skeena","Nass")
+group_names <- group_names[c(4,6,5,2,3,1)]
+
+Umsy_reg_priors <- apply(Umsy_reg,2,FUN=function(x){c(mean(x),sd(x))})
+Umsy_reg_priors <- data.frame("Region"=group_names,"mean"=Umsy_reg_priors[1,],"tau"=1/(Umsy_reg_priors[2,]^2))
+saveRDS(Umsy_reg_priors,"Results/Umsy_reg.rds")
 
 
 Smsy_priors <- as.data.frame(apply(Smsy_t,c(3,2),mean))
 Sgen_priors <- as.data.frame(apply(Sgen_t,c(3,2),mean))
 Umsy_priors <- as.data.frame(apply(Umsy_t,c(3,2),mean))
+Umsy_reg_priors <- as.data.frame(apply(Umsy_reg_t,c(3,2),mean))
+
 colnames(Sgen_priors) <- colnames(Umsy_priors) <- colnames(Smsy_priors) <- co_pops$population
+colnames(Umsy_reg_priors) <- group_names
+
 Smsy_priors$Year <- seq(1980,2016,1)
 Sgen_priors$Year <- seq(1980,2016,1)
 Umsy_priors$Year <- seq(1980,2016,1)
+Umsy_reg_priors$Year <- seq(1980,2016,1)
 
 Smsy_tv <- tidyr::pivot_longer(Smsy_priors,cols=1:length(co_pops$population),names_to="Population",values_to = "Value")
 Smsy_tv$Metric <- "Smsy"
@@ -122,6 +159,10 @@ Sgen_tv$Metric <- "Sgen"
 Umsy_tv <- tidyr::pivot_longer(Umsy_priors,cols=1:length(co_pops$population),names_to="Population",values_to = "Value")
 Umsy_tv$Metric <- "Umsy"
 
+Umsy_reg_tv <- tidyr::pivot_longer(Umsy_reg_priors,cols=1:6,names_to="Region",values_to = "Value")
+Umsy_reg_tv$Metric <- "Umsy"
+
 time_varying <- rbind(Smsy_tv,Sgen_tv,Umsy_tv)
 
 saveRDS(time_varying,"Results/time_varying_metrics.rds")
+saveRDS(Umsy_reg_tv,"Results/time_varying_regional_UMSY.rds")

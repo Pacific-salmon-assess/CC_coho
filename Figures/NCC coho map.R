@@ -25,20 +25,20 @@ library(tidyr)
 
 #library(USAboundaries)
 
-# Set plot box.  Set Port Hardy as centre and box is 20km to each side
-plot_area1 <- bc_cities() %>%   #Extract datafram of all bc cities location
-  filter(NAME == "Klemtu") %>%
-  #filter(NAME == "Port Hardy") %>%
-  st_buffer(dist = 2000000)%>%    # 20000 is a decent zoom in one that covers the Keogh
-  st_bbox() %>%                 # Turn into a square
-  st_as_sfc()                   # converts to sfc object
+# # Set plot box.  Set Port Hardy as centre and box is 20km to each side
+# plot_area1 <- bc_cities() %>%   #Extract datafram of all bc cities location
+#   filter(NAME == "Klemtu") %>%
+#   #filter(NAME == "Port Hardy") %>%
+#   st_buffer(dist = 2000000)%>%    # 20000 is a decent zoom in one that covers the Keogh
+#   st_bbox() %>%                 # Turn into a square
+#   st_as_sfc()                   # converts to sfc object
 
 co_pops<-read.table("Data/coho_groups.txt",header=TRUE)
 ### lumping Rivers Smith Inlet with Area 7-8
 co_pops[which(co_pops$group==7),4]<-6
 group_names <- c("Central Coast (South)","Hecate Lowlands","Inner Waters","Haida Gwaii","Skeena","Nass")
 group_names <- group_names[c(4,6,5,2,3,1)]
-group_names <- factor(group_names,levels=c("Haida Gwaii","Nass","Skeena","Inner Waters","Hecate Lowlands","Central Coast (South)"))
+group_names <- factor(group_names,levels=c("Haida Gwaii","Nass","Skeena","Hecate Lowlands","Inner Waters","Central Coast (South)"))
 co_pops$region <- group_names[co_pops$group]
 
 NCC_coho <- read.csv("Data/NCC coho.csv",header=TRUE)
