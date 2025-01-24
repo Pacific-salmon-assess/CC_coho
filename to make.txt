@@ -1,0 +1,18 @@
+data_wrangling.R - something to source()
+
+
+Notes from chat:
+Coho_SR_model_DRAFT3
+make robust for new years, 
+Harvest Rate Plots.R - first 40 lines is good spot to look at wrangling
+get script where we have one stop shop of data merging (creek by year) with all data 
+
+3 models - mean reverting, RW, trending
+6 versions of running it 
+1-fit data
+2-fwd projections
+... for each model 
+
+appendix 3 is a good resource for sorting out what CVs to use 
+
+get the wrangling code sorted before I fuck off 
