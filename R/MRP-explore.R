@@ -16,4 +16,9 @@ filter(release, RELEASE_STAGE_NAME == "Seapen 2+") |> #check 2+ do we care?
   select(PROJ_NAME, BROOD_YEAR, TotalRelease)
 
 
-extractor <- read.csv(here("Data/MRP/2025-01-24 Mrp Extractor Results Query #137479.csv"))
+extractor <- read.csv(here("Data/MRP/2025-01-24 Mrp Extractor Results Query #137479.csv")) 
+
+extractor2 <- extractor|>
+  clean_names() #trying suggestion from Nick
+
+
