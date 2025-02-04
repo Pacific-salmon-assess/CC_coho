@@ -98,7 +98,7 @@ for (i in 1:n.pops){
 
 #################################################
 ##### Model 3 - hierarchical model w/time-variant (recursive) alphas and uninformative priors
-###   with reginal hyper priors mu.alpha which is also time varying, estimating overall change in productivity 
+###   with regional hyper priors mu.alpha which is also time varying, estimating overall change in productivity 
 ###   for each population group
 
 ####   The next step would be to add a covariance matrix between annual productivities
