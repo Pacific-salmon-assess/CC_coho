@@ -18,10 +18,9 @@ filter(release, RELEASE_STAGE_NAME == "Seapen 2+") |> #check 2+ do we care?
 
 
 #want release site, date, number, which fishery intercepted, estimated and expanded #
-#which mark do I filter on? want the one that has been expanded
-#use catch region name to get fishery types
-
 extractor <- read_xlsx(here("Data/MRP/GLASERD_20250203_125530.xlsx"), sheet = 2)
+
+unique(extractor$`(RL) Release PSC Basin Name`) #check where releases are from
 
 extractor_releases <- extractor |>
   select(`(RL) Tagcode`, `(RL) Brood Year`, `(RL) Release Year`, `(RL) Release Site Name`, 
@@ -33,15 +32,20 @@ extractor_releases <- extractor |>
   
 extractor_recoveries <- extractor |>
   select(`(RC) Tagcode`, `(RC) Recovery Year`, `(RC) Catch Region Name`,
-         `(RC) MRP Area Name`, `(RC) Age - Total`, `(RC) Fishery PSC Code`, 
-         `(RC) Gear Aggregate Code`, `(RC) Estimated Number`, `(RC) MRP Fishery Code`) |>
+         `(RC) MRP Area Name`, `(RC) Age - Total`, `(RC) Fishery PSC Code`, `(RC) Gear Code`,  
+         `(RC) Gear Aggregate Code`, `(RC) Gear PSC Code`,  `(RC) Estimated Number`, `(RC) MRP Fishery Code`) |>
   rename(tagcode = `(RC) Tagcode`)
 
 #what recovery area should I summarize by?
 #mike suggests Strata ID, but use the "Criteria" filter in the extractor to see the dups.
+#ryan suggests these below. either way, will need to aggregate them up
 unique(extractor_recoveries$`(RC) Catch Region Name`)
 unique(extractor_recoveries$`(RC) MRP Area Name`) #this would make sense if multiple PFMAs weren't grouped together
 unique(extractor_recoveries$`(RC) Fishery PSC Code`)
+
+unique(extractor_recoveries$`(RC) Gear Code`)
+unique(extractor_recoveries$`(RC) Gear PSC Code`)
+
 
 extractor_recoveries_fishery <- extractor_recoveries |> 
   mutate(fishery = case_when(`(RC) MRP Fishery Code` == "N" ~ "FN-EO", #change codes to names
@@ -70,6 +74,8 @@ ER_fishery <- filter(ER_fishery, !(fishery %in% c("Escapement", "Test")))
 
 ER_fishery_ag <- ER_fishery |>
   group_by(`(RC) Recovery Year`, fishery) |>
+  #or summarize all recoveries by all releases? otherwise it will be reporting a lot of 
+    #"one off" recoveries?
   summarise(avg_ER = median(ER, na.rm = TRUE), 
             sd = sd(ER, na.rm = TRUE), 
             lwr = quantile(ER, .25, na.rm = TRUE), 
@@ -86,6 +92,7 @@ ggplot(filter(ER_fishery_ag, `(RC) Recovery Year` >= 2010),
   guides(alpha = "none")
 
 #looking at input data ###################################################################
-  #prop at age is constant across years, so just need to get er_E, er_2, er_3 somehow
+  #prop at age is constant across years, so just need to get er_E, er_2, er_3 somehow, then
+  #fill in the rest with the calcs in the .xlsx doc. See Kyle's email from feb 4 about the er's
 data <- read.table(here("Data/Coho_Brood_MASTER_25-update.txt")) |>
   arrange(pop_no, year)
