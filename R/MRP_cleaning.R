@@ -48,7 +48,7 @@ unique(extractor_recoveries$`(RC) Gear PSC Code`)
 
 
 extractor_recoveries_fishery <- extractor_recoveries |> 
-  mutate(fishery = case_when(`(RC) MRP Fishery Code` == "N" ~ "FN-EO", #change codes to names
+  mutate(fishery = case_when(`(RC) MRP Fishery Code` == "N" ~ "FN-EO", #change codes to names, based on extractor "criteria" table
                              `(RC) MRP Fishery Code` == "Z" ~ "Sport", 
                              `(RC) MRP Fishery Code` == "C" ~ "Commercial", 
                              `(RC) MRP Fishery Code` == "T" ~ "Test", 
@@ -64,12 +64,30 @@ extractor_recoveries_fishery <- extractor_recoveries |>
 
 ER_fishery <- left_join(extractor_recoveries_fishery, extractor_releases, by = "tagcode") |>
   filter(!is.na(fishery), !is.na(recoveries)) |>
-  mutate(ER = recoveries/`(RL) Num WithCWT 1st Mark (v4)`)
+  mutate(ER = recoveries/`(RL) Num WithCWT 1st Mark (v4)`) |>
+  arrange(`(RC) Recovery Year`, tagcode, fishery)
 
+# exploring some groupings ###
 ER_fishery |>
   group_by(fishery) |>
   summarise(n())
 
+ER_fishery |>
+  group_by(fishery, `(RC) Recovery Year`, `(RL) Release PSC Basin Name`) |>
+  summarise(n())
+
+group <- ER_fishery |>
+  group_by(fishery, tagcode, `(RC) Recovery Year`, `(RL) Release PSC Basin Name`) |>
+  summarise(groups = n())
+
+filter(group, groups>1) #seems like most descriptive grouping
+
+#why so many NAs in the data?
+ER_fishery |>
+  group_by(`(RL) Release PSC Basin Name`) |>
+  summarise(n())  
+
+# doing some plotting to glean any inference ###
 ER_fishery <- filter(ER_fishery, !(fishery %in% c("Escapement", "Test")))
 
 ER_fishery_ag <- ER_fishery |>
@@ -83,16 +101,22 @@ ER_fishery_ag <- ER_fishery |>
 
 ggplot(ER_fishery_ag, aes(`(RC) Recovery Year`, avg_ER, color = fishery)) +
   geom_ribbon(aes(ymin = lwr, ymax = upr, fill = fishery, alpha = 0.2)) +
-  geom_line()
+  geom_line() +
+  labs(title = "Average ER of CWT marked Coho released on the CC", 
+       x = "recovery year", y = "average ER (recoveries/releases)") +
+  guides(alpha = "none")
 
 ggplot(filter(ER_fishery_ag, `(RC) Recovery Year` >= 2010), 
        aes(`(RC) Recovery Year`, avg_ER, color = fishery)) +
   geom_ribbon(aes(ymin = lwr, ymax = upr, fill = fishery, alpha = 0.2)) +
-  geom_line(size = 2) +
+  geom_line(size = 1.5) +
+  labs(title = "Reccent average ER of CWT marked Coho released on the CC", 
+       x = "recovery year", y = "average ER (recoveries/releases)") +
   guides(alpha = "none")
 
-#looking at input data ###################################################################
-  #prop at age is constant across years, so just need to get er_E, er_2, er_3 somehow, then
-  #fill in the rest with the calcs in the .xlsx doc. See Kyle's email from feb 4 about the er's
-data <- read.table(here("Data/Coho_Brood_MASTER_25-update.txt")) |>
-  arrange(pop_no, year)
+ggplot(filter(ER_fishery, !is.na(`(RL) Release PSC Basin Name`)), 
+       aes(`(RC) Recovery Year`, log(ER), color = fishery)) +
+  geom_point() +
+  facet_wrap(~`(RL) Release PSC Basin Name`) +
+  labs(title = "log ER of CWT marked Coho released on the CC, by recovery area", 
+       x = "recovery year", y = "log(ER) (recoveries/releases)") 
