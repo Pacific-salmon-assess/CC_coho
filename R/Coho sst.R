@@ -76,7 +76,7 @@ annual_sst_stock_anomalies <- annual_sst_stock_anomalies %>%
                             stock.id == 6 ~ "Skeena"))
 
 ## merge with time-varying alphas 
-tv_alpha <- read.csv("Data/Coho alpha trends.csv")
+tv_alpha <- read.csv("Data/Coho_alpha_trends_2024update.csv")
 tv_alpha$brood_yr <- tv_alpha$year
 tv_alpha$year <- tv_alpha$year+2 #align year with ocean entry year assuming one year in freshwater
 
@@ -86,6 +86,11 @@ alpha_summer_sst$region <- factor(alpha_summer_sst$region, levels = c("Central C
 alpha_annual_sst <- left_join(tv_alpha,annual_sst_stock_anomalies)
 alpha_annual_sst$region <- factor(alpha_annual_sst$region, levels = c("Central Coast (South)","Hecate Lowlands","Inner Waters",
                                                                       "Skeena","Haida Gwaii","Nass"))
+alpha_annual_sst$period <- "annual"
+alpha_summer_sst$period <- "summer"
+alpha_sst <- rbind(alpha_annual_sst,alpha_summer_sst)
+
+write.csv(alpha_sst,"Data/alpha-sst-2025update.csv")
 
 ## what do ssts and anomalies look like by region over time? 
 ggplot() +
@@ -94,7 +99,7 @@ ggplot() +
   xlab("Year") +
   ylab("Summer SST") +
   theme_bw() 
-ggsave("Figures/SST/summer_sst.jpeg")
+ggsave("Figures/SST/2025_update/summer_sst.jpeg")
 
 ggplot() +
   geom_line(data = alpha_annual_sst, aes(x=year, y = sst, color = region), size=1.5) +
@@ -102,7 +107,7 @@ ggplot() +
   xlab("Year") +
   ylab("Annual SST") +
   theme_bw() 
-ggsave("Figures/SST/annual_sst.jpeg")
+ggsave("Figures/SST/2025_update/annual_sst.jpeg")
 
 ggplot() +
   geom_line(data = alpha_summer_sst, aes(x=year, y = sst.anom, color = region), size=1.5) +
@@ -128,7 +133,7 @@ ggplot() +
   ylab("ln alpha") +
   facet_wrap(~region, ncol=2) +
   theme_bw() 
-ggsave("Figures/SST/summer_sst_prod.jpeg")
+ggsave("Figures/SST/2025_update/summer_sst_prod.jpeg")
 
 ggplot() +
   geom_point(data = alpha_annual_sst, aes(x= sst.anom, y = ln_alpha, color=year), size=2) +
@@ -139,7 +144,7 @@ ggplot() +
   ylab("ln alpha") +
   facet_wrap(~region, ncol=2) +
   theme_bw() 
-ggsave("Figures/SST/annual_sst_prod.jpeg")
+ggsave("Figures/SST/2025_update/annual_sst_prod.jpeg")
 
 ## and how about some stats?
 alpha_summer_sst %>% 

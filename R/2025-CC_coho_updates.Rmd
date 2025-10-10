@@ -1,0 +1,605 @@
+---
+title: "Central Coast coho analysis updates"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document:
+    collapsed: no
+    fig_caption: yes
+    highlight: espresso
+    number_sections: yes
+    smooth_scroll: yes
+    theme: sandstone
+    toc: yes
+    toc_float: yes
+---
+  
+  ```{=html}
+<style type="text/css">
+  
+  body{ /* Normal  */
+      font-size: 13px;
+  }
+td {  /* Table  */
+    font-size: 13px;
+}
+h1.title {
+  font-size: 24px;
+  color: Black;
+}
+h1 { /* Header 1 */
+    font-size: 19px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 15px;
+  color: Black;
+}
+h3 { /* Header 3 */
+    font-size: 15px;
+  color: Black;
+}
+</style>
+  ```
+# About
+This document summarizes updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023). Specific updates include: 
+
+* Updated spawner estimates with available data through 2024
+
+* Updated the ER time series base on the most recent “CCFN” estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided
+
+* Decomposed the Bella Coola spawner timeseries used in Wilson et al. 2025 (which ended in 2007) into separate time series for a handful of tribs that had decent temporal coverage including counts in recent decade (i.e., fish_creek, habensborg_slough, molly_walker, noohalk_ck, nookliklonnik_ck, snootli_ck, thorsen_ck)
+
+* Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds which allows for a greater number of “complete” spawner-recruitment observations 
+
+* Refit the AR-1 time varying model from Wilson et al. 2025 to the updated data decribed above
+
+* Updated the regional productivity~sst relationships/fits 
+
+* Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years
+
+I have not attempted to incorporate the StAD SIL review of data quality yet in part because it was limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. 
+
+Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho)
+
+```{r setup, include=FALSE}
+# libraries and global settings ----
+library(tidyverse)
+library(here)
+library(ggsidekick) # Sean A's helper functions for ggplot;  devtools::install_github("seananderson/ggsidekick")
+library(gsl)
+
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, cache=FALSE, include=TRUE, 
+                      warning = FALSE, dpi=300)
+options(scipen=1, digits=4)
+```
+
+```{r wrangle}
+# read in data ----
+SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025Update.csv"), header=T)
+SR.dat<-subset(SR.dat,SR.dat$year<2021)
+
+SR.dat$logRS1<-log(SR.dat$RS_E)
+SR.dat$logRS2<-log(SR.dat$RS_2)
+SR.dat$logRS3<-log(SR.dat$RS_3)
+SR.dat$logRS4<-log(SR.dat$RS_4)
+
+SR.dat$er_est <- SR.dat$er_2
+SR.dat$er_est[is.na(SR.dat$er_est)] <- SR.dat$er_E[is.na(SR.dat$er_est)]
+
+n.pops<-max(SR.dat$pop_no)
+n.years<-length(seq(1980,2020,1))
+spawn<-matrix(nrow=n.years,ncol=n.pops,NA)
+
+rec1<-matrix(nrow=n.years,ncol=n.pops,NA)
+rec2<-matrix(nrow=n.years,ncol=n.pops,NA)
+rec3<-matrix(nrow=n.years,ncol=n.pops,NA)
+rec4<-matrix(nrow=n.years,ncol=n.pops,NA)
+
+logRS1<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS2<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS3<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS4<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRSo<-matrix(nrow=n.years,ncol=n.pops,NA)
+er_est <- matrix(nrow=n.years,ncol=n.pops,NA)
+
+for(i in 1:n.pops){
+  dat<-subset(SR.dat,SR.dat$pop_no==i)
+  spawn[,i]<-as.numeric(dat[,"escapement"])
+  rec1[,i]<-dat[,"rec_E"]
+  rec2[,i]<-dat[,"rec_2"]
+  rec3[,i]<-dat[,"rec_3"]
+  rec4[,i]<-dat[,"rec_4"]
+  logRS1[,i]<-dat[,"logRS1"]
+  logRS2[,i]<-dat[,"logRS2"]
+  logRS3[,i]<-dat[,"logRS3"]
+  logRS4[,i]<-dat[,"logRS4"]
+  logRSo[,i]<-ifelse(!is.na(dat[,"logRS2"]),dat[,"logRS2"],dat[,"logRS1"])
+  er_est[,i]<-dat$er_est
+}
+
+yrs<-matrix(nrow=n.years,ncol=n.pops,NA) 
+
+for(i in 1:n.pops){
+  yrs[1:length(which(spawn[,i]>0)),i]<-which(spawn[,i]>0)
+}
+
+#### making matrixes JAGS to index
+spawn.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS1.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS2.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS3.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRS4.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+logRSB.mat<-matrix(nrow=n.years,ncol=n.pops,NA)
+
+
+for(i in 1:n.pops){
+  spawn.mat[1:length(na.omit(yrs[,i])),i]<-spawn[na.omit(yrs[,i]),i]
+}
+
+for(i in 1:n.pops){
+  logRS1.mat[1:length(na.omit(yrs[,i])),i]<-logRS1[na.omit(yrs[,i]),i]
+  logRS2.mat[1:length(na.omit(yrs[,i])),i]<-logRS2[na.omit(yrs[,i]),i]
+  logRS3.mat[1:length(na.omit(yrs[,i])),i]<-logRS3[na.omit(yrs[,i]),i]
+  logRS4.mat[1:length(na.omit(yrs[,i])),i]<-logRS4[na.omit(yrs[,i]),i]
+}
+
+pops_E<-unique(SR.dat[which(SR.dat$stat_area<5),1])
+pops_2<-seq(1,52,1)
+pops_2<-pops_2[-c(pops_E)]
+
+for(i in pops_2){
+  logRSB.mat[1:length(na.omit(yrs[,i])),i]<-logRS2[na.omit(yrs[,i]),i]
+
+}
+
+for(i in pops_E){
+  logRSB.mat[1:length(na.omit(yrs[,i])),i]<-logRS1[na.omit(yrs[,i]),i]
+  
+}
+
+## Will eventually need to subset out populations where we want to analyze RS2 instead of RS1
+
+yrs.dat<-rep(NA,n.pops)
+for (i in 1:n.pops){
+  yrs.dat[i]<-length(na.omit(yrs[,i]))
+}
+
+
+## I grouped rivers and smiths inlet with Area 7 & 8
+
+co_pops<-read.table(here("Data/coho_groups_2025.txt"),header=TRUE)
+co_pops$mean_total<-NA
+
+for(i in 1:58){
+  dat<-subset(SR.dat,SR.dat$pop_no==i)
+  co_pops[i,5]<-mean(na.omit(dat$total_runE))
+}
+
+### lumping Rivers Smith Inlet with Area 7-8
+co_pops[which(co_pops$group==7),4]<-6
+
+
+# Read in model fits and wrangle ---- 
+quantilesDF<-readRDS(here("Results/2025COSR3B.tr1_lalpha_MCMCDF.rds"))
+mcmc_names<-readRDS(here("Results/2025mcmc_names.rds"))
+
+yrs<-matrix(nrow=n.years,ncol=n.pops,NA) 
+# pulling out the parameters
+spawners_impute<-quantilesDF[grep("spawners",mcmc_names),]
+pop_alpha_mu<-quantilesDF[grep("ln_alpha.mu",mcmc_names),]
+pop_betas3B<-quantilesDF[grep("beta",mcmc_names),]
+pop_alphas3B<-quantilesDF[grep("\\blalpha",mcmc_names),]
+mu_alphaHG<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,1]",mcmc_names),] # grab Group 1
+mu_alphaNass<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,2]",mcmc_names),] # grab Group 2
+mu_alphaSkeena<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,3]",mcmc_names),] # grab Group 3
+mu_alphaHec<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,4]",mcmc_names),] # grab Group 4
+mu_alphaNC<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,5]",mcmc_names),] # grab Group 5
+mu_alphaCC<-quantilesDF[grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,6]",mcmc_names),] # grab Group 6
+
+# pulling out the individual population productivity trends
+
+a.pops_med<-matrix(data=NA, nrow=41,ncol=n.pops+1)
+a.pops_med[,1]<-seq(1980,2020,1)
+
+a.pops_lci<-matrix(data=NA, nrow=41,ncol=n.pops+1)
+a.pops_lci[,1]<-seq(1980,2020,1)
+
+a.pops_uci<-matrix(data=NA, nrow=41,ncol=n.pops+1)
+a.pops_uci[,1]<-seq(1980,2020,1)
+
+pop.start<-rep(NA,58)
+pop.end<-rep(NA,58)
+
+pop.start[1]<-1
+pop.end[1]<-0+n.years
+
+for (i in 2:58){
+  pop.start[i]<-pop.end[i-1]+1
+  pop.end[i]<-pop.end[i-1]+n.years
+}
+
+for (i in 1:n.pops){
+  years<-1:n.years
+  a.pops_med[years,i+1]<-pop_alphas3B[pop.start[i]:pop.end[i],3]
+  a.pops_lci[years,i+1]<-pop_alphas3B[pop.start[i]:pop.end[i],1]
+  a.pops_uci[years,i+1]<-pop_alphas3B[pop.start[i]:pop.end[i],5]
+}
+a.pops_med[,-1][which(is.na(logRS4),arr.ind = TRUE)] <- NA
+a.pops_lci[,-1][which(is.na(logRS4),arr.ind = TRUE)] <- NA
+a.pops_uci[,-1][which(is.na(logRS4),arr.ind = TRUE)] <- NA
+
+
+```
+# Reconstructed harvest rates
+
+```{r hr reconstructions, echo=FALSE, fig.align = "center", out.width = '90%'}
+# exploitation rate reconstructions ---
+er <- read.csv(here("Data/CO ERs by CUs.csv"))  |>
+  mutate(CU = CUs,
+         `Canada (CCFN)` = Can_ER_Avg,
+         `Canada (English 2018)` = Can_ER_E,
+         Alaska = AK_ER_E)|>
+  select(CU, Year, Alaska, `Canada (English 2018)`, `Canada (CCFN)`) |>
+  filter(CU %in% c("Hecate_Low","Douglas_Kitimat","North_Coast_Streams", "Bella_Coola_Dean","Rivers_Inlet")) |>
+  pivot_longer(cols = c(Alaska, `Canada (English 2018)`, `Canada (CCFN)`), names_to = "Fishery",values_to = "er")
+
+er$CU_f <- factor(er$CU, levels = c("Douglas_Kitimat", "North_Coast_Streams", "Hecate_Low", "Bella_Coola_Dean", "Rivers_Inlet"))
+
+ggplot(er |> filter(Fishery != "Canada (English 2018)"), aes(x = Year, y = er, fill = Fishery)) + 
+  geom_area() +
+  xlab("Year") +
+  ylab("Harvest rate") +
+  facet_wrap(~CU_f, ncol=2) +
+  scale_fill_manual(values=c( "#E69F00", "#56B4E9")) +
+  theme_sleek() +
+  theme(legend.position = c(0.75,0.15),
+        legend.title = element_text(size=11),
+        legend.text = element_text(size=10))
+        
+```
+
+# Coho populations 
+
+```{r coho pops, out.width="75%"}
+
+knitr::include_graphics(here("Figures/coho-map.jpg"))
+
+
+```
+
+# Trends in productivity 
+
+```{r prod trends, echo=FALSE, fig.align = "center", out.width = '90%', warning = FALSE,}
+### this is the region for each population
+hg<-which(co_pops$group==1)
+nass<-which(co_pops$group==2)
+skeena<-which(co_pops$group==3)
+hec_low<-which(co_pops$group==4)
+nc_inner<-which(co_pops$group==5)
+cc_south<-which(co_pops$group==6)
+
+### plotting trend in NCC coho productivity 
+years<-seq(1980,2020,1)
+cols<-c("seagreen2","royalblue2","darkviolet","turquoise3","orchid3","chartreuse3")
+
+### 95% CI
+
+uci95cc<-mu_alphaCC[,5]
+lci95cc<-mu_alphaCC[,1]
+
+uci95hec<-mu_alphaHec[,5]
+lci95hec<-mu_alphaHec[,1]
+
+uci95hg<-mu_alphaHG[,5]
+lci95hg<-mu_alphaHG[,1]
+
+uci95nc<-mu_alphaNC[,5]
+lci95nc<-mu_alphaNC[,1]
+
+uci95sk<-mu_alphaSkeena[,5]
+lci95sk<-mu_alphaSkeena[,1]
+
+uci95nass<-mu_alphaNass[,5]
+lci95nass<-mu_alphaNass[,1]
+
+### 75% CI
+uci75cc<-mu_alphaCC[,4]
+lci75cc<-mu_alphaCC[,2]
+
+uci75hec<-mu_alphaHec[,4]
+lci75hec<-mu_alphaHec[,2]
+
+uci75hg<-mu_alphaHG[,4]
+lci75hg<-mu_alphaHG[,2]
+
+uci75nc<-mu_alphaNC[,4]
+lci75nc<-mu_alphaNC[,2]
+
+uci75sk<-mu_alphaSkeena[,4]
+lci75sk<-mu_alphaSkeena[,2]
+
+uci75nass<-mu_alphaNass[,4]
+lci75nass<-mu_alphaNass[,2]
+
+years <- (nrow(mu_alphaSkeena)-1):nrow(mu_alphaSkeena)
+
+x <- c(1980:2020, 2020:1980)
+
+y1cc <- c(lci95cc,rev(uci95cc))
+y2cc <- c(lci75cc,rev(uci75cc))
+
+y1hec <- c(lci95hec,rev(uci95hec))
+y2hec <- c(lci75hec,rev(uci75hec))
+
+y1hg <- c(lci95hg,rev(uci95hg))
+y2hg <- c(lci75hg,rev(uci75hg))
+
+y1nc <- c(lci95nc,rev(uci95nc))
+y2nc <- c(lci75nc,rev(uci75nc))
+
+y1sk <- c(lci95sk,rev(uci95sk))
+y2sk <- c(lci75sk,rev(uci75sk))
+
+y1na <- c(lci95nass,rev(uci95nass))
+y2na <- c(lci75nass,rev(uci75nass))
+
+sizes<-rep(NA,4)
+sizes[1]<-log(100)*0.2
+sizes[2]<-log(1000)*0.2
+sizes[3]<-log(10000)*0.2
+sizes[4]<-log(50000)*0.2
+
+
+y_range <- pmin(10,range(mu_alphaCC,mu_alphaHec,mu_alphaHG,mu_alphaNC,mu_alphaNass,mu_alphaSkeena,a.pops_med[,-1],na.rm=TRUE))
+years<-seq(1980,2020,1)
+
+### this is the region for each population
+hg<-which(co_pops$group==1)
+nass<-which(co_pops$group==2)
+skeena<-which(co_pops$group==3)
+hec_low<-which(co_pops$group==4)
+nc_inner<-which(co_pops$group==5)
+cc_south<-which(co_pops$group==6)
+
+library(tidyverse)
+# str(a.pops_med)
+# str(SR.dat)
+a.pops_df <- as.data.frame(a.pops_med)
+colnames(a.pops_df) <- c("year",co_pops$population)
+a.pops_long <- pivot_longer(a.pops_df,cols=-1,values_to = "ln_a",names_to="population")
+
+df_coho <- left_join(SR.dat,a.pops_long,by=c("year","population"))
+df_coho$mean_escapement <- co_pops$mean_total[match(df_coho$population,co_pops$population)]
+df_coho$region_no <- co_pops$group[match(df_coho$population,co_pops$population)]
+df_coho$Region[df_coho$region_no==1] <- "Haida Gwaii"
+df_coho$Region[df_coho$region_no==2] <- "Nass"
+df_coho$Region[df_coho$region_no==3] <- "Skeena"
+df_coho$Region[df_coho$region_no==4] <- "Hecate Lowlands"
+df_coho$Region[df_coho$region_no==5] <- "Inner Waters"
+df_coho$Region[df_coho$region_no==6] <- "Central Coast (South)"
+df_coho$Year <- df_coho$year
+
+regional_prod <- rbind(cbind("Year"=years,"Region"="Nass",as.data.frame(mu_alphaNass)),
+                       cbind("Year"=years,"Region"="Skeena",as.data.frame(mu_alphaSkeena)),
+                       cbind("Year"=years,"Region"="Inner Waters",as.data.frame(mu_alphaNC)),
+                       cbind("Year"=years,"Region"="Haida Gwaii",as.data.frame(mu_alphaHG)),
+                       cbind("Year"=years,"Region"="Hecate Lowlands",as.data.frame(mu_alphaHec)),
+                       cbind("Year"=years,"Region"="Central Coast (South)",as.data.frame(mu_alphaCC)))
+row.names(regional_prod) <- NULL
+regional_prod$Region <- factor(regional_prod$Region,levels=c("Haida Gwaii","Nass","Skeena","Hecate Lowlands","Inner Waters","Central Coast (South)"))
+df_coho$Region <- factor(df_coho$Region,levels=c("Haida Gwaii","Nass","Skeena","Hecate Lowlands","Inner Waters","Central Coast (South)"))
+
+regional_prod$umsy <- 1-lambert_W0(exp(1-regional_prod$`50%`))
+
+regional_prod_CC<- regional_prod |>
+  filter(Region %in% c("Inner Waters","Hecate Lowlands","Central Coast (South)"))
+regional_df_coho<- df_coho |>
+  filter(Region %in% c("Inner Waters","Hecate Lowlands","Central Coast (South)"))
+
+umsy_scaling <- 1-lambert_W0(exp(1-regional_prod$`50%`))
+
+margins <- c(0.5,0.5,0.5,1.1)
+margins <- c(0.1,1,0.1,0.1)
+ggplot(data=regional_prod_CC,aes(x=Year,y=`50%`,group=Region)) + 
+  geom_ribbon(data=regional_prod_CC,aes(x=Year,ymax=`97.5%`,ymin=`2.5%`,group=Region),alpha=0.5) +
+  geom_point(data=regional_df_coho,aes(x=Year,y=ln_a,size=mean_escapement),pch=21,col="black",fill="white") +
+  geom_line(data=regional_prod_CC,aes(x=Year,y=`50%`,colour=Region),lwd=1) +
+  facet_wrap(~Region,ncol=2)+
+  theme_minimal() +
+  scale_size_area(name="Mean spawners",limits=(c(100,50000)),
+                  breaks=(c(100,1000,10000,50000)),
+                  labels = c("100","1,000","10,000","50,000"))+
+  scale_colour_brewer(name="Region",palette = "Paired",direction=1) +
+  theme(legend.position = "top",strip.text.x = element_text(hjust = -0),plot.margin=unit(margins,"line")) +
+  xlab("Brood year") + ylab("Intrinsic recruitment productivity (ln \U03b1)")+
+  theme(text = element_text(size=10),axis.text = element_text(size=10),legend.title = element_text(size = 9),legend.text = element_text(size=7)) +
+  theme(legend.box.just="center",legend.box="horizontal",legend.justification = "center",legend.key.size=unit(0.5, "lines"),legend.margin = margin(c(0,1,0,0),unit="lines"))
+
+```
+
+
+# SST relationships
+
+```{r sst, out.width="75%", out.height="150%"}
+alpha_sst <-read.csv(here("Data/alpha-sst-2025update.csv"), header=T)
+## what do ssts and anomalies look like by region over time? 
+alpha_sst <- as.data.frame(alpha_sst)
+CC_summer_sst <- alpha_sst |>
+  filter(region %in% c("Inner Waters","Hecate Lowlands","Central Coast (South)"),
+         period == "summer")
+
+a <- ggplot() +
+  geom_line(data = CC_summer_sst, aes(x=year, y = sst, color = region), size=1) +
+  scale_color_viridis_d() +
+  xlab("Year") +
+  ylab("Summer SST") +
+  theme_bw() +
+  theme(legend.position = "top") 
+
+b <- ggplot() +
+  geom_point(data = CC_summer_sst, aes(x= sst, y = ln_alpha, color=year), size=2) +
+  geom_smooth(data = CC_summer_sst, aes(x= sst, y = ln_alpha), method=lm, color="dark grey") +
+# geom_smooth(data = alpha_summer_sst, aes(x= sst.anom, y = ln_alpha), method=loess) +
+  scale_color_viridis_c() +
+  xlab("Summer SST") +
+  ylab("ln alpha") +
+  facet_wrap(~region, ncol=2) +
+  theme_bw() 
+
+cowplot::plot_grid(a, b,  labels="auto", ncol=1,rel_heights = c(1, 2))
+
+```
+
+# Returns by population over time
+
+## Hecate lowlands
+
+```{r return plots hecate, warning = FALSE, results= 'asis', out.width = '90%'}
+SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025Update.csv"), header=T)
+co_pops<-read.table(here("Data/coho_groups_2025.txt"),header=TRUE)
+spawn_data <- left_join(SR.dat,co_pops|>select(pop_no,group),by="pop_no")
+
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==4) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = returns)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Returns") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
+
+
+## Inner waters
+
+```{r return plots inner, warning = FALSE, results= 'asis', out.width = '90%'}
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==5) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = returns)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Returns") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
+
+## Central Coast (South)
+```{r return plots south, warning = FALSE, results= 'asis', out.width = '90%'}
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==6) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = returns)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Returns") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
+
+# Spawners by population over time 
+
+## Hecate lowlands
+
+```{r spawn plots hecate, warning = FALSE, results= 'asis', out.width = '90%'}
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==4) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = spawners)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Spawners") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
+
+
+## Inner waters
+
+```{r spawn plots inner, warning = FALSE, results= 'asis', out.width = '90%'}
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==5) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = spawners)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Spawners") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
+
+
+## Central Coast (South)
+
+```{r spawn plots south, warning = FALSE, results= 'asis', out.width = '90%'}
+pop_group <- spawn_data |>
+  filter(!is.na(total_run4),
+         !is.na(escapement),
+         group==6) |>
+  mutate(spawners = as.numeric(escapement),
+         returns = as.numeric(total_run4))|>
+  select(year, group,population, spawners, returns)
+
+pop_group_short<- pop_group|>
+  filter(year>1999)
+
+ggplot(pop_group,aes(x = year, y = spawners)) +
+  geom_smooth(data=pop_group_short,  method="lm", color="grey") +
+  geom_point(size=2, color="dark grey")+
+  xlab("Year") +
+  ylab("Spawners") +
+  theme_minimal() +
+  facet_wrap(~population, scales = "free_y", ncol = 3) +
+  theme(axis.title = element_text(size=12))  
+```
