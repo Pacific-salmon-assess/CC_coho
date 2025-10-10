@@ -41,9 +41,9 @@ h3 { /* Header 3 */
 </style>
   ```
 # About
-This document summarizes updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including: 
+This document summarizes preliminary updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including: 
 
-* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_update.xlsx). Previous estimates were through 2020.
+* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_update.xlsx)). Previous estimates were through 2020.
 
 * Updated the ER time series base on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
 
@@ -51,15 +51,25 @@ This document summarizes updates to the analyses described in [Wilson et al. 202
 
 * Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
 
-* Refit the AR-1 time varying model from Wilson et al. 2025 to the updated data decribed above
+* Refit the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/forecasting%20model%20ar1.jags)) to the updated data described above.
 
-* Updated the regional productivity~sst relationships/fits 
+* Updated the regional productivity~sst relationships/fits.
 
-* Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years
+* Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years.
 
-These analyzes have not attempted to incorporate the StAD SIL (steam inspection log) review of data quality yet in part because to date is has been limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
+These analyzes have not yet attempted to incorporate the StAD SIL (steam inspection log) review of data quality in part because it has so far been limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
 
-Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho)
+Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho).
+
+Some preliminary, and non-exhaustive, insights based on these updates include:
+
+1. Total harvest rates have remained relatively consistent over the past 5 years, averaging ~30% in more northern areas and to ~20% in southern ones. Across all region harvest rates dipped in 2020 and have ticked slightly upward since. 
+
+2. Estimates of intrinsic productivity rebounded slightly in the Hecate Lowlands region after reaching historical lows in the 2014-16 brood years, and averaged ~1.6 recruits per-spawner in the most recent brood years (2017-2020). These recent intrinsic productivities are associated with harvest rates expected to sustain maximum yield ($U_{MSY}$) of ~ 25%. In the other Central Coast regions intrinsic productivities have been variable by generally higher then in the Hecate Lowlands region. The high frequency variation in the Central Coast (South) region in recent years is suspicious and warrants further investigation. 
+
+3. Summer SSTs declined by ~ 0.5 degrees in recent years compared to the highs seen in 2015-2019 during the marine heatwave years. However, summer SSTs since 2020 have still been higher than the long-term average (1980-present). Relationships between regional intrinsic productivities and SST in the summer of marine entry remained the same as previously estimated when the additional 4 years of data are included, with the Hecate Lowlands region exhibiting the strongest negative relationships between coho productivity and summer SSTs.  
+
+4. Trends in reconstructed returns and spawners are highly variable among populations and within regions with some populations exhibiting steep declines over recent decades, and others being stable or increasing slightly. These apparent trends may be confounded by changes in assessment methodologies and reliability of estimates which in theory can be better accounted for over time as a detailed review of individual estimates is completed.   
 
 ```{r setup, include=FALSE}
 # libraries and global settings ----
@@ -69,7 +79,7 @@ library(ggsidekick) # Sean A's helper functions for ggplot;  devtools::install_g
 library(gsl)
 
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, cache=FALSE, include=TRUE, 
-                      warning = FALSE, dpi=300)
+                      warning = FALSE, dpi=300, align='center' )
 options(scipen=1, digits=4)
 ```
 
@@ -232,7 +242,7 @@ a.pops_uci[,-1][which(is.na(logRS4),arr.ind = TRUE)] <- NA
 ```
 # Reconstructed harvest rates
 
-```{r hr reconstructions, echo=FALSE, fig.align = "center", out.width = '90%'}
+```{r hr reconstructions, echo=FALSE, fig.align = "center", out.width = '90%', fig.cap="Reconstructed Alaskan and Canadian harvest rates across all fisheries by region. Estimates are based on CWT indicaotr stocks in Northern British Columbia and assumptions about vulnerability of Central Coast coho to fisheries in Alaska and Canada"}
 # exploitation rate reconstructions ---
 er <- read.csv(here("Data/CO ERs by CUs.csv"))  |>
   mutate(CU = CUs,
@@ -260,7 +270,7 @@ ggplot(er |> filter(Fishery != "Canada (English 2018)"), aes(x = Year, y = er, f
 
 # Coho populations 
 
-```{r coho pops, out.width="75%"}
+```{r coho pops, out.width="75%", fig.cap="Coho populations origionally included in Wilson et al. 2025, by Management Area and Region. Populations from the Central Coast Regions were the focus of the updated analysis in this document"}
 
 knitr::include_graphics(here("Figures/coho-map.jpg"))
 
@@ -269,7 +279,7 @@ knitr::include_graphics(here("Figures/coho-map.jpg"))
 
 # Trends in productivity 
 
-```{r prod trends, echo=FALSE, fig.align = "center", out.width = '90%', warning = FALSE,}
+```{r prod trends, echo=FALSE, fig.align = "center", out.width = '90%', warning = FALSE, fig.cap="Trends the intrinsic productivity for coho salmon populations within three regions in the Central Coast (lines indicate region-specific posterior median, and the shaded regions indicating 95% credible intervals)."}
 ### this is the region for each population
 hg<-which(co_pops$group==1)
 nass<-which(co_pops$group==2)
@@ -420,7 +430,7 @@ ggplot(data=regional_prod_CC,aes(x=Year,y=`50%`,group=Region)) +
 
 # SST relationships
 
-```{r sst, out.width="75%", out.height="150%"}
+```{r sst,  fig.height = 9, out.width="70%", fig.cap="Sea surface temperatures (SSTs) in summer of coho ocean entry year by region and over time (a) and relationshiops between SST and regional intrinsic productivity by region (b)."}
 alpha_sst <-read.csv(here("Data/alpha-sst-2025update.csv"), header=T)
 ## what do ssts and anomalies look like by region over time? 
 alpha_sst <- as.data.frame(alpha_sst)
