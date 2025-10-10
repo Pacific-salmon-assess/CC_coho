@@ -80,10 +80,12 @@ tv_alpha <- read.csv("Data/Coho_alpha_trends_2024update.csv")
 tv_alpha$brood_yr <- tv_alpha$year
 tv_alpha$year <- tv_alpha$year+2 #align year with ocean entry year assuming one year in freshwater
 
-alpha_summer_sst <- left_join(tv_alpha,summer_sst_stock_anomalies)
+alpha_summer_sst <- right_join(tv_alpha,summer_sst_stock_anomalies) |>
+  filter(year>1981)
 alpha_summer_sst$region <- factor(alpha_summer_sst$region, levels = c("Central Coast (South)","Hecate Lowlands","Inner Waters",
                                                                        "Skeena","Haida Gwaii","Nass"))
-alpha_annual_sst <- left_join(tv_alpha,annual_sst_stock_anomalies)
+alpha_annual_sst <- right_join(tv_alpha,annual_sst_stock_anomalies)|>
+  filter(year>1981)
 alpha_annual_sst$region <- factor(alpha_annual_sst$region, levels = c("Central Coast (South)","Hecate Lowlands","Inner Waters",
                                                                       "Skeena","Haida Gwaii","Nass"))
 alpha_annual_sst$period <- "annual"
