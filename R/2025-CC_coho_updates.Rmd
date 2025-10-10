@@ -63,7 +63,7 @@ Code to reproduce analysis, and this doc, can be found [here](https://github.com
 
 Some preliminary, and non-exhaustive, insights based on these updates include:
 
-1. Total harvest rates have remained relatively consistent over the past 5 years, averaging ~30% in more northern areas and to ~20% in southern ones. Across all region harvest rates dipped in 2020 and have ticked slightly upward since. 
+1. Total harvest rates have remained relatively consistent over the past 5 years, averaging ~30% in more northern areas and ~20% in southern ones. Across all region harvest rates dipped in 2020 and have ticked slightly upward since. 
 
 2. Estimates of intrinsic productivity rebounded slightly in the Hecate Lowlands region after reaching historical lows in the 2014-16 brood years, and averaged ~1.6 recruits per-spawner in the most recent brood years (2017-2020). These recent intrinsic productivities are associated with harvest rates expected to sustain maximum yield ($U_{MSY}$) of ~ 25%. In the other Central Coast regions intrinsic productivities have been variable by generally higher then in the Hecate Lowlands region. The high frequency variation in the Central Coast (South) region in recent years is suspicious and warrants further investigation. 
 
