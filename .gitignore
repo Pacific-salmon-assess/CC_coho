@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 .rds
+Data/sst_raw/
+Results/Model-fits

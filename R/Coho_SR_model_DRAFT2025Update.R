@@ -177,17 +177,17 @@ neff_test<-coda::effectiveSize(resultSR_B3[,grep("mu_lalpha",mcmc_names)])
 neff_test<-coda::effectiveSize(resultSR_B3[,grep("lalpha",mcmc_names)])
 neff_test<-coda::effectiveSize(resultSR_B3[,grep("ln_alpha.mu",mcmc_names)])
 
-saveRDS(resultSR_B3,file="Results/2025COSR3B.tr1_lalpha_MCMC.rds")
+saveRDS(resultSR_B3,file="Results/Model-fits/2025COSR3B.tr1_lalpha_MCMC.rds")
 
 mcmc_names <- colnames(resultSR_B3[[1]])
 SR.results_B3<-summary(resultSR_B3)
 SRquantilesDF <- as.data.frame(SR.results_B3$quantiles)
-saveRDS(SRquantilesDF,file="Results/2025COSR3B.tr1_lalpha_MCMCDF.rds")
-saveRDS(mcmc_names,file="Results/2025mcmc_names.rds")
+saveRDS(SRquantilesDF,file="Results/Model-fits/2025COSR3B.tr1_lalpha_MCMCDF.rds")
+saveRDS(mcmc_names,file="Results/Model-fits/2025mcmc_names.rds")
 
 # load model fit/posteriors ----
 
-resultSR_B3<-readRDS(here("Results/2025COSR3B.tr1_lalpha_MCMC.rds"))
+resultSR_B3<-readRDS(here("Results/Model-fits/2025COSR3B.tr1_lalpha_MCMC.rds"))
 mcmc_names <- colnames(resultSR_B3[[1]])
 SR.results_B3<-summary(resultSR_B3)
 
@@ -401,7 +401,7 @@ cc <- prod_decline(exp(mypost[,grepl("\\bmu_lalpha",mcmc_names) & grepl("\\b,6]"
 
 # save regional productivties ----
 
-resultSR_B3<-readRDS(here("Results/2025COSR3B.tr1_lalpha_MCMC.rds"))
+resultSR_B3<-readRDS(here("Results/Model-fits/2025COSR3B.tr1_lalpha_MCMC.rds"))
 mcmc_names <- colnames(resultSR_B3[[1]])
 resultSR_B3 <- as.matrix(resultSR_B3)
 group_names <- c("Central Coast (South)","Hecate Lowlands","Inner Waters","Haida Gwaii","Skeena","Nass")

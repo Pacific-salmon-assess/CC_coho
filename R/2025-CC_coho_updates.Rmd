@@ -41,15 +41,15 @@ h3 { /* Header 3 */
 </style>
   ```
 # About
-This document summarizes updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023). Specific updates include: 
+This document summarizes updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including: 
 
-* Updated spawner estimates with available data through 2024
+* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_update.xlsx). Previous estimates were through 2020.
 
-* Updated the ER time series base on the most recent “CCFN” estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided
+* Updated the ER time series base on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
 
 * Decomposed the Bella Coola spawner timeseries used in Wilson et al. 2025 (which ended in 2007) into separate time series for a handful of tribs that had decent temporal coverage including counts in recent decade (i.e., fish_creek, habensborg_slough, molly_walker, noohalk_ck, nookliklonnik_ck, snootli_ck, thorsen_ck)
 
-* Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds which allows for a greater number of “complete” spawner-recruitment observations 
+* Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
 
 * Refit the AR-1 time varying model from Wilson et al. 2025 to the updated data decribed above
 
@@ -57,7 +57,7 @@ This document summarizes updates to the analyses described in [Wilson et al. 202
 
 * Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years
 
-I have not attempted to incorporate the StAD SIL review of data quality yet in part because it was limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. 
+These analyzes have not attempted to incorporate the StAD SIL (steam inspection log) review of data quality yet in part because to date is has been limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
 
 Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho)
 
@@ -180,8 +180,8 @@ co_pops[which(co_pops$group==7),4]<-6
 
 
 # Read in model fits and wrangle ---- 
-quantilesDF<-readRDS(here("Results/2025COSR3B.tr1_lalpha_MCMCDF.rds"))
-mcmc_names<-readRDS(here("Results/2025mcmc_names.rds"))
+quantilesDF<-readRDS(here("Results/Model-fits/2025COSR3B.tr1_lalpha_MCMCDF.rds"))
+mcmc_names<-readRDS(here("Results/Model-fits/2025mcmc_names.rds"))
 
 yrs<-matrix(nrow=n.years,ncol=n.pops,NA) 
 # pulling out the parameters
