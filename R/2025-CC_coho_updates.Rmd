@@ -57,7 +57,7 @@ This document summarizes preliminary updates to the analyses described in [Wilso
 
 * Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years.
 
-These analyzes have not yet attempted to incorporate the StAD SIL (steam inspection log) review of data quality in part because it has so far been limited to only a half dozen systems and so seemed pointless to try and account for variation in observation error until we have more systems reviewed and with confidence ratings. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
+These analyzes have not yet attempted to incorporate the StAD SIL (steam inspection log) review of data quality in part because it has so far been limited to only a portion of the coho populations considered. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
 
 Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho).
 
@@ -545,6 +545,8 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 ```
 
 # Spawners by population over time 
+
+For systems that have had a detailed review of SILs (steam inspection logs) those observations that are considered high quality are labelled " review of data quality"high" and colored red. 
 
 ## Hecate lowlands
 
