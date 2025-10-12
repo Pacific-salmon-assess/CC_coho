@@ -45,7 +45,7 @@ This document summarizes preliminary updates to the analyses described in [Wilso
 
 * Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_update.xlsx)). Previous estimates were through 2020.
 
-* Updated the ER time series base on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
+* Updated harvest rate time series based on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
 
 * Decomposed the Bella Coola spawner timeseries used in Wilson et al. 2025 (which ended in 2007) into separate time series for a handful of tribs that had decent temporal coverage including counts in recent decade (i.e., fish_creek, habensborg_slough, molly_walker, noohalk_ck, nookliklonnik_ck, snootli_ck, thorsen_ck)
 
@@ -473,9 +473,11 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==4) |>
-  mutate(spawners = as.numeric(escapement),
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
   filter(year>1999)
@@ -497,10 +499,12 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
-         group==5) |>
-  mutate(spawners = as.numeric(escapement),
+         group==4) |>
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
   filter(year>1999)
@@ -520,10 +524,12 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
-         group==6) |>
-  mutate(spawners = as.numeric(escapement),
+         group==4) |>
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
   filter(year>1999)
@@ -547,21 +553,30 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==4) |>
-  mutate(spawners = as.numeric(escapement),
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
-  filter(year>1999)
+  filter(year>2000)
 
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
   theme(axis.title = element_text(size=12))  
+
+# library("lme4")
+# pop_group_short$year_index <- pop_group_short$year-1999
+# model<-lmer(log(spawners)~year_index+(year_index|population),data=pop_group_short)
+# ranef(model)
+# model_s<-summary(model)
+# round(as.numeric((exp(model_s$coefficients[2,1]*(3*4))-1)*100))
 ```
 
 
@@ -572,16 +587,18 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==5) |>
-  mutate(spawners = as.numeric(escapement),
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
-  filter(year>1999)
+  filter(year>2000)
 
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
@@ -597,16 +614,18 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==6) |>
-  mutate(spawners = as.numeric(escapement),
+  mutate(unknown = as.numeric(escapement),
+         high = as.numeric(esc_2),
          returns = as.numeric(total_run4))|>
-  select(year, group,population, spawners, returns)
+  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
-  filter(year>1999)
+  filter(year>2000)
 
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
