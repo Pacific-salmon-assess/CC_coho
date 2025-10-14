@@ -546,7 +546,7 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 
 # Spawners by population over time 
 
-For systems that have had a detailed review of SILs (steam inspection logs) those observations that are considered high quality are labelled " review of data quality"high" and colored red. 
+For systems that have had a detailed review of SILs (steam inspection logs) those observations that are considered high quality are labelled " review of data quality "high" and colored red. Long-term average spawner abundance is denoted with a dashed grey line. 
 
 ## Hecate lowlands
 
@@ -567,6 +567,7 @@ pop_group_short<- pop_group|>
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
   geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
@@ -601,6 +602,7 @@ pop_group_short<- pop_group|>
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
   geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
@@ -628,6 +630,7 @@ pop_group_short<- pop_group|>
 ggplot(pop_group,aes(x = year, y = spawners)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
   geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
