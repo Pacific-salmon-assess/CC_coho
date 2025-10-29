@@ -51,7 +51,7 @@ This document summarizes preliminary updates to the analyses described in [Wilso
 
 * Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
 
-* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/forecasting%20model%20ar1.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low" or unknown quality, and then fit to the updated data described above.
+* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/model_fitting%20tr1%20extra%20variance.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low" or unknown quality, and then fit to the updated data described above.
 
 * Updated the regional productivity~sst relationships/fits.
 
