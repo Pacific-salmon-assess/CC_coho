@@ -51,7 +51,7 @@ This document summarizes preliminary updates to the analyses described in [Wilso
 
 * Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
 
-* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/model_fitting%20tr1%20extra%20variance.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low" or unknown quality, and then fit to the updated data described above.
+* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/model_fitting%20tr1%20extra%20variance.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low / unknown" or unknown quality, and then fit to the updated data described above.
 
 * Updated the regional productivity~sst relationships/fits.
 
@@ -474,7 +474,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==4) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
@@ -503,7 +503,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==5) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
@@ -530,7 +530,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==6) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
@@ -562,7 +562,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==4) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
@@ -598,7 +598,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==5) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
@@ -628,7 +628,7 @@ pop_group <- spawn_data |>
          !is.na(escapement),
          group==6) |>
   mutate(survey_quality = case_when(
-    data_qual == "2" ~ "low",
+    data_qual == "2" ~ "low / unknown",
     data_qual == "1" ~ "high"),
     spawners = as.numeric(escapement),
     returns = total_run4)|>
