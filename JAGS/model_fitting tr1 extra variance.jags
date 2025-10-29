@@ -1,0 +1,66 @@
+model{
+  
+  ## Stock-recruit component
+  for(i in 1:Npops){
+    spawn_trend_pop[i] ~ dnorm(spawn_trend[group[i]], pow(sigma_trends[group[i]],-2)) # alpha must be positive
+
+  sigma_s0[1,i] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
+  sigma[1,i] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
+  sigma[2,i] ~ dt(0, pow(5,-2), 1)T(0,)
+  sigma_s0[2,i] ~ dt(0, pow(5,-2), 1)T(0,)
+  tau[1,i] <- pow(sigma[1,i], -2)
+  tau[2,i] <- pow(sigma[2,i], -2)
+    
+    beta[i] <- 1/Smax[i]
+    Smax[i] ~ dlnorm(Smax.p[i],1/(Smax.tau[i]^2))
+    spawn_int[i] ~ dnorm(0,1e-3)
+    spawners[1,i] ~ dlnorm(spawn_trend_pop[i]*1 + log(init_s0[i])+spawn_int[i],pow(sigma_s0[quality[1,i],i], -2)*(1-u_spawn*u_spawn))
+    logRS[1,i] ~ dnorm(mu.y[1,i], tau[quality[1,i],i])
+    mu.y[1,i] <- lalpha[1,i] - beta[i] * spawners[1,i]
+    lalpha[1,i] ~ dnorm(mu_lalpha[1,group[i]], pow(sigma_alpha[group[i]],-2)) # alpha must be positive
+    alpha[1,i] <- log(exp(lalpha[1,i]+0.5*(sigma_alpha[group[i]]^2))) # bias-corrected log-alpha for population i
+    
+    for(t in 2:n.years) {
+      spawners[t,i] ~ dlnorm((spawn_trend_pop[i]*t + spawn_int[i]) + u_spawn*(log(spawners[t-1,i])-(spawn_trend_pop[i]*(t-1) + spawn_int[i])),pow(sigma_s0[quality[1,i],i], -2))T(0,)
+      logRS[t,i] ~ dnorm(mu.y[t,i], tau[quality[1,i],i])
+      mu.y[t,i] <- lalpha[t,i] - beta[i] * spawners[t,i]
+      lalpha[t,i] ~ dnorm(mu_lalpha[t,group[i]], pow(sigma_alpha[group[i]],-2)) # alpha must be positive
+      alpha[t,i] <- log(exp(lalpha[t,i]+0.5*(sigma_alpha[group[i]]^2))) # bias-corrected log-alpha for population i
+    }
+    
+    ln_alpha.mu[i] <- mean(lalpha[1:n.years,i]) # long-term average log-alpha
+  }
+  
+  mu_lalpha[1,1:Kgroups] ~ dmnorm(init_lalpha,tauMVN) # initialize the log-alpha 6x6 matrix
+  for(z in 2:n.years)
+  {
+    for(k in 1:Kgroups)
+    {
+    mn_lalpha_tv[z,k] <- (beta_trend[k]*z + mean_alpha[k]) + u_alpha*(mu_lalpha[z-1,k] - (beta_trend[k]*(z-1) + mean_alpha[k]))
+    }
+    mu_lalpha[z,1:Kgroups] ~ dmnorm(mn_lalpha_tv[z,1:Kgroups],tauMVN) # make log-alpha recursive, and correlated to each group
+  }
+  
+  for(z in 1:n.years)
+  {
+    for(k in 1:Kgroups)
+    {
+      mu_alpha[z,k] <- log(exp(mu_lalpha[z,k] + 0.5*sigma_group[k])) # global bias-corrected mean alphas for each of the 6 groups
+    }
+  }
+  
+  u_alpha ~ dunif(-0.99,0.99)
+  u_spawn ~ dunif(-0.99,0.99)
+
+  tauMVN ~ dwish(covarGroups,Kgroups+1)
+  sigmaGroups <- inverse(tauMVN)
+  for(k in 1:Kgroups)
+  {
+    mean_alpha[k] ~ dnorm(0,1e-3*(1-u_alpha*u_alpha))
+    beta_trend[k] ~ dnorm(0,1e-3)
+    spawn_trend[k] ~ dnorm(0,1e-3)
+    sigma_group[k] <- sigmaGroups[k,k]
+    sigma_alpha[k] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior on standard deviation
+    sigma_trends[k] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
+  }
+}

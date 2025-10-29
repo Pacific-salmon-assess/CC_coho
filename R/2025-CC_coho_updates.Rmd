@@ -43,7 +43,7 @@ h3 { /* Header 3 */
 # About
 This document summarizes preliminary updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including: 
 
-* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_update.xlsx)). Previous estimates were through 2020.
+* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_updateDQ.xlsx)). Previous estimates were through 2020.
 
 * Updated harvest rate time series based on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
 
@@ -51,13 +51,13 @@ This document summarizes preliminary updates to the analyses described in [Wilso
 
 * Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
 
-* Refit the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/forecasting%20model%20ar1.jags)) to the updated data described above.
+* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/forecasting%20model%20ar1.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low" or unknown quality, and then fit to the updated data described above.
 
 * Updated the regional productivity~sst relationships/fits.
 
 * Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years.
 
-These analyzes have not yet attempted to incorporate the StAD SIL (steam inspection log) review of data quality in part because it has so far been limited to only a portion of the coho populations considered. With a more complete review of SILs for the systems considered in this analysis we can adapt the model to account for confidence in estimates (e.g., in likelihood by a assuming a large variance with the spawner observations that were are much less confident in). 
+These analyzes explicitly try to account for variable confidence in observations of spawner abundance for those systems that have had a detailed review of SILs (steam inspection logs) by NC StAD. This is done by assuming a much larger variance on observations of low (or unknown) quality in the model likelihood than those that have been identified as high quality. 
 
 Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho).
 
@@ -85,7 +85,7 @@ options(scipen=1, digits=4)
 
 ```{r wrangle}
 # read in data ----
-SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025Update.csv"), header=T)
+SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025UpdateDQ.csv"), header=T)
 SR.dat<-subset(SR.dat,SR.dat$year<2021)
 
 SR.dat$logRS1<-log(SR.dat$RS_E)
@@ -461,11 +461,11 @@ cowplot::plot_grid(a, b,  labels="auto", ncol=1,rel_heights = c(1, 2))
 ```
 
 # Returns by population over time
+For systems that have had a detailed review of SILs (steam inspection logs) those reconstructions of total returns that are considered high quality are labelled "high" and colored red. Long-term average returns is denoted with a dashed grey line. 
 
 ## Hecate lowlands
 
 ```{r return plots hecate, warning = FALSE, results= 'asis', out.width = '90%'}
-SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025Update.csv"), header=T)
 co_pops<-read.table(here("Data/coho_groups_2025.txt"),header=TRUE)
 spawn_data <- left_join(SR.dat,co_pops|>select(pop_no,group),by="pop_no")
 
@@ -473,10 +473,11 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==4) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -484,7 +485,8 @@ pop_group_short<- pop_group|>
 
 ggplot(pop_group,aes(x = year, y = returns)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Returns") +
   theme_minimal() +
@@ -499,11 +501,12 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
-         group==4) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+         group==5) |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -511,7 +514,8 @@ pop_group_short<- pop_group|>
 
 ggplot(pop_group,aes(x = year, y = returns)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Returns") +
   theme_minimal() +
@@ -524,11 +528,12 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
-         group==4) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+         group==6) |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -536,7 +541,8 @@ pop_group_short<- pop_group|>
 
 ggplot(pop_group,aes(x = year, y = returns)) +
   geom_smooth(data=pop_group_short,  method="lm", color="grey") +
-  geom_point(size=2, color="dark grey")+
+  geom_point(size=2, aes(color=survey_quality))+
+  geom_smooth(method="lm",formula=y~1,se=FALSE,lty=2,color="grey")+
   xlab("Year") +
   ylab("Returns") +
   theme_minimal() +
@@ -546,7 +552,7 @@ ggplot(pop_group,aes(x = year, y = returns)) +
 
 # Spawners by population over time 
 
-For systems that have had a detailed review of SILs (steam inspection logs) those observations that are considered high quality are labelled " review of data quality "high" and colored red. Long-term average spawner abundance is denoted with a dashed grey line. 
+For systems that have had a detailed review of SILs (steam inspection logs) those observations that are considered high quality are labelled "high" and colored red. Long-term average spawner abundance is denoted with a dashed grey line. 
 
 ## Hecate lowlands
 
@@ -555,10 +561,11 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==4) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -590,10 +597,11 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==5) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -608,6 +616,7 @@ ggplot(pop_group,aes(x = year, y = spawners)) +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
   theme(axis.title = element_text(size=12))  
+  
 ```
 
 
@@ -618,10 +627,11 @@ pop_group <- spawn_data |>
   filter(!is.na(total_run4),
          !is.na(escapement),
          group==6) |>
-  mutate(unknown = as.numeric(escapement),
-         high = as.numeric(esc_2),
-         returns = as.numeric(total_run4))|>
-  pivot_longer(cols=c("unknown","high"), names_to = "survey_quality", values_to = "spawners") |>
+  mutate(survey_quality = case_when(
+    data_qual == "2" ~ "low",
+    data_qual == "1" ~ "high"),
+    spawners = as.numeric(escapement),
+    returns = total_run4)|>
   select(year, group,population, survey_quality,spawners, returns)
 
 pop_group_short<- pop_group|>
@@ -636,4 +646,5 @@ ggplot(pop_group,aes(x = year, y = spawners)) +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
   theme(axis.title = element_text(size=12))  
+
 ```
