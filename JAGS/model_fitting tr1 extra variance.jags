@@ -4,8 +4,8 @@ model{
   for(i in 1:Npops){
     spawn_trend_pop[i] ~ dnorm(spawn_trend[group[i]], pow(sigma_trends[group[i]],-2)) # alpha must be positive
 
-  sigma_s0[1,i] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
-  sigma[1,i] ~ dt(0, pow(2.5,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
+  sigma_s0[1,i] ~ dt(0, pow(1,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
+  sigma[1,i] ~ dt(0, pow(1,-2), 1)T(0,) # vague half-Cauchy prior for standard deviations
   sigma[2,i] ~ dt(0, pow(5,-2), 1)T(0,)
   sigma_s0[2,i] ~ dt(0, pow(5,-2), 1)T(0,)
   tau[1,i] <- pow(sigma[1,i], -2)

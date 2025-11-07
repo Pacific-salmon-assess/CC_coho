@@ -40,37 +40,6 @@ h3 { /* Header 3 */
 }
 </style>
   ```
-# About
-This document summarizes preliminary updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including: 
-
-* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_updateDQ.xlsx)). Previous estimates were through 2020.
-
-* Updated harvest rate time series based on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
-
-* Decomposed the Bella Coola spawner timeseries used in Wilson et al. 2025 (which ended in 2007) into separate time series for a handful of tribs that had decent temporal coverage including counts in recent decade (i.e., fish_creek, habensborg_slough, molly_walker, noohalk_ck, nookliklonnik_ck, snootli_ck, thorsen_ck)
-
-* Assumed all fish mature as 3 or 4 year olds by lumping the very tiny (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
-
-* Adapted the AR-1 time varying model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/model_fitting%20tr1%20extra%20variance.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low / unknown" or unknown quality, and then fit to the updated data described above.
-
-* Updated the regional productivity~sst relationships/fits.
-
-* Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years.
-
-These analyzes explicitly try to account for variable confidence in observations of spawner abundance for those systems that have had a detailed review of SILs (steam inspection logs) by NC StAD. This is done by assuming a much larger variance on observations of low (or unknown) quality in the model likelihood than those that have been identified as high quality. 
-
-Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho).
-
-Some preliminary, and non-exhaustive, insights based on these updates include:
-
-1. Total harvest rates have remained relatively consistent over the past 5 years, averaging ~30% in more northern areas and ~20% in southern ones. Across all region harvest rates dipped in 2020 and have ticked slightly upward since. 
-
-2. Estimates of intrinsic productivity rebounded slightly in the Hecate Lowlands region after reaching historical lows in the 2014-16 brood years, and averaged ~1.6 recruits per-spawner in the most recent brood years (2017-2020). These recent intrinsic productivities are associated with harvest rates expected to sustain maximum yield ($U_{MSY}$) of ~ 25%. In the other Central Coast regions intrinsic productivities have been variable by generally higher then in the Hecate Lowlands region. The high frequency variation in the Central Coast (South) region in recent years is suspicious and warrants further investigation. 
-
-3. Summer SSTs declined by ~ 0.5 degrees in recent years compared to the highs seen in 2015-2019 during the marine heatwave years. However, summer SSTs since 2020 have still been higher than the long-term average (1980-present). Relationships between regional intrinsic productivities and SST in the summer of marine entry remained the same as previously estimated when the additional 4 years of data are included, with the Hecate Lowlands region exhibiting the strongest negative relationships between coho productivity and summer SSTs.  
-
-4. Trends in reconstructed returns and spawners are highly variable among populations and within regions with some populations exhibiting steep declines over recent decades, and others being stable or increasing slightly. These apparent trends may be confounded by changes in assessment methodologies and reliability of estimates which in theory can be better accounted for over time as a detailed review of individual estimates is completed.   
-
 ```{r setup, include=FALSE}
 # libraries and global settings ----
 library(tidyverse)
@@ -83,6 +52,67 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, cache=FALSE, include=TRUE,
                       warning = FALSE, dpi=300, align='center' )
 options(scipen=1, digits=4)
 ```
+
+# About
+**This document summarizes preliminary updates to the analyses described in [Wilson et al. 2025](https://cdnsciencepub.com/doi/full/10.1139/cjfas-2025-0023) including:** 
+
+* Updated spawner estimates, where available, through 2024 (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/Coho_Brood_MASTER_2025_updateDQ.xlsx)). Previous estimates were through 2020.
+
+* Updated harvest rate time series based on the most recent estimates Will A. generated with the updated CWT indicator stock time series Ryan W. provided (file [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/Data/CO%20ERs%20by%20CUs.csv)) 
+
+* Decomposed the Bella Coola spawner timeseries used in Wilson et al. 2025 (which ended in 2007) into separate time series for a handful of tribs that had decent temporal coverage including counts in recent decade (i.e., fish_creek, habensborg_slough, molly_walker, noohalk_ck, nookliklonnik_ck, snootli_ck, thorsen_ck)
+
+* Assumed all fish mature as 3 or 4 year olds by lumping the very small (<0.05%) assumed contribution of 5 year olds together with 4 year olds. This allows for a greater number of “complete” spawner-recruitment observations 
+
+* Adapted the time varying productivity model from Wilson et al. 2025 (JAGS model [here](https://github.com/Pacific-salmon-assess/CC_coho/blob/main/JAGS/model_fitting%20tr1%20extra%20variance.jags)) to have separate variances for spawner observations that were deemed to be of "high" and "low" or unknown quality, and then fit to the updated data described above.
+
+* Updated the regional productivity~sst relationships/fits.
+
+* Visualized population level estimates of spawner abundance over time to help shed light on observed trends in recent years.
+
+Data quality for these analyses was based on a detailed review of SILs (steam inspection logs) by NC StAD. We modified the existing model to allow the variances in the likelihood for model fit to spawner observations to vary as a function of data quality. Specifically we assumed a larger variance on observations of low (or unknown) quality than those that have been identified as high quality via an informative half-Cauchy prior (scale = 1) on high quality observations and a weak prior (scale = 5) on low (or unknown) quality observations (figure below). 
+
+Code to reproduce analysis, and this doc, can be found [here](https://github.com/Pacific-salmon-assess/NCC_coho).
+
+```{r plot, echo=FALSE, fig.align = "center", out.width = '55%', fig.cap="Illustration of prior distributions used for high and low (unknown) quality spawner abundance estimates, where high quanlity observations are assumed to arise from a half-Cauchy distribution with scale =1, and low (unknown) quality observations are assumed to arise from a distribution with scale =5. "}
+# Define half-Cauchy PDF function
+dhalfcauchy <- function(x, scale = 1) {
+  ifelse(x >= 0, (2 / pi) * (scale / (x^2 + scale^2)), 0)
+}
+
+# Generate data
+x <- seq(0, 15, length.out = 1000)
+scales <- c(1, 5)
+
+data <- data.frame(
+  x = rep(x, times = length(scales)),
+  density = unlist(lapply(scales, function(s) dhalfcauchy(x, scale = s))),
+  scale = factor(rep(scales, each = length(x)))
+)
+
+# Plot
+ggplot(data, aes(x = x, y = density, color = scale)) +
+  geom_line(size = 1.2) +
+  labs(
+    x = "SD in spawner observations",
+    y = "density",
+    color = "scale"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "top")
+
+```
+
+**Some preliminary, and non-exhaustive, insights based on these updates include:**
+
+1. Total harvest rates have remained relatively consistent over the past 5 years, averaging ~30% in more northern areas and ~20% in southern ones. Across all region harvest rates dipped in 2020 and have ticked slightly upward since. 
+
+2. Estimates of intrinsic productivity rebounded slightly in the Hecate Lowlands region after reaching historical lows in the 2014-16 brood years, and averaged ~1.6 recruits per-spawner in the most recent brood years (2017-2020). These recent intrinsic productivities are associated with harvest rates expected to sustain maximum yield ($U_{MSY}$) of ~ 25%. In the other Central Coast regions intrinsic productivities have been variable but generally higher then in the Hecate Lowlands region. The high frequency variation in the Central Coast (South) region in recent years is suspicious and warrants further investigation. 
+
+3. Summer SSTs declined by ~ 0.5 degrees in recent years compared to the highs seen in 2015-2019 during the marine heatwave known as the "blob" However, summer SSTs since 2020 have still been higher than the long-term average (1980-present). Relationships between regional intrinsic productivities and SST in the summer of marine entry remained the same as previously estimated when the additional 4 years of data are included, with the Hecate Lowlands region exhibiting the strongest negative relationships between coho productivity and summer SSTs.  
+
+4. Trends in reconstructed returns and spawners are highly variable among populations and within regions with some populations exhibiting steep declines over recent decades, and others being stable or increasing slightly. These apparent trends may be confounded by changes in assessment methodologies and reliability of estimates which in theory can be better accounted for over time as a detailed review of individual estimates is completed.   
+
 
 ```{r wrangle}
 # read in data ----
@@ -493,7 +523,8 @@ ggplot(pop_group,aes(x = year, y = returns)) +
   ylab("Returns") +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8))  
 ```
 
 
@@ -522,7 +553,8 @@ ggplot(pop_group,aes(x = year, y = returns)) +
   ylab("Returns") +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8))   
 ```
 
 ## Central Coast (South)
@@ -548,8 +580,9 @@ ggplot(pop_group,aes(x = year, y = returns)) +
   xlab("Year") +
   ylab("Returns") +
   theme_minimal() +
-  facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  facet_wrap(~population, scales = "free_y", ncol = 3)+
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8)) 
 ```
 
 # Spawners by population over time 
@@ -581,7 +614,8 @@ ggplot(pop_group,aes(x = year, y = spawners)) +
   ylab("Spawners") +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8))   
 
 # library("lme4")
 # pop_group_short$year_index <- pop_group_short$year-1999
@@ -633,8 +667,9 @@ ggplot(pop_group,aes(x = year, y = spawners)) +
   xlab("Year") +
   ylab("Spawners") +
   theme_minimal() +
-  facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  facet_wrap(~population, scales = "free_y", ncol = 3)+
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8))   
   
 ```
 
@@ -681,7 +716,8 @@ ggplot(pop_group,aes(x = year, y = spawners)) +
   ylab("Spawners") +
   theme_minimal() +
   facet_wrap(~population, scales = "free_y", ncol = 3) +
-  theme(axis.title = element_text(size=12))  
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8))  
 
 ```
 Estimated percent change in spawner abundance, by population and across all populations within region, over last 3 generations (12 years) based on hierarchical model fit to all observations across populations post "coho crisis".

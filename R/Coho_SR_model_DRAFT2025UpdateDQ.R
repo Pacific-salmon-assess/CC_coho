@@ -161,21 +161,19 @@ init_fx <- function(chain_id)
        "sigma"=sigma_sd)
 }
 
-variables <- c("Smax","beta","mu_alpha","alpha","tau","sigma","sigma_s0","sigmaGroups")#,"beta","tau.alpha","sigma.alpha","tau","sigma") # these are the variables to keep track of
+variables <- c("spawners","beta","mu_lalpha","lalpha","ln_alpha.mu","sigma","sigma_s0")#,"beta","tau.alpha","sigma.alpha","tau","sigma") # these are the variables to keep track of
 
-temp3B <- jags.model(file=here("JAGS/model_fitting tr1 extra variance.jags"), data=datamcmc2 ,n.chains = n_chains, n.adapt=5000, quiet=FALSE,inits=init_fx)#, inits=inits)
+temp3B <- jags.model(file=here("JAGS/model_fitting tr1 extra variance.jags"), data=datamcmc2 ,n.chains = n_chains, n.adapt=500, quiet=FALSE,inits=init_fx)#, inits=inits)
 update(temp3B, n.iter = 7500)  # burnin
 resultSR_B3<-coda.samples(model=temp3B, variable.names=variables, n.iter=thinning*samples, thin = thinning) 
 
-resultSR_B3[,grep("sigma_s0",mcmc_names)]
-
 mcmc_names <- colnames(resultSR_B3[[1]])
-plot(resultSR_B3[,grep("mu_lalpha",mcmc_names)[1:4]])
+#plot(resultSR_B3[,grep("mu_lalpha",mcmc_names)[1:4]])
 SR.results_B3<-summary(resultSR_B3)
 #converg.test<-gelman.diag(resultSR_B3[,grep("spawners",mcmc_names)]) ##breaks
-converg.test<-gelman.diag(resultSR_B3[,grep("mu_lalpha",mcmc_names)])
-converg.test<-gelman.diag(resultSR_B3[,grep("lalpha",mcmc_names)])
-converg.test<-gelman.diag(resultSR_B3[,grep("ln_alpha.mu",mcmc_names)])
+#converg.test<-gelman.diag(resultSR_B3[,grep("mu_lalpha",mcmc_names)])
+#converg.test<-gelman.diag(resultSR_B3[,grep("lalpha",mcmc_names)])
+#converg.test<-gelman.diag(resultSR_B3[,grep("ln_alpha.mu",mcmc_names)])
 
 
 neff_test<-coda::effectiveSize(resultSR_B3[,grep("spawners",mcmc_names)])
@@ -190,6 +188,8 @@ SR.results_B3<-summary(resultSR_B3)
 SRquantilesDF <- as.data.frame(SR.results_B3$quantiles)
 saveRDS(SRquantilesDF,file="Results/Model-fits/2025COSR3B.tr1_lalpha_MCMCDF.rds")
 saveRDS(mcmc_names,file="Results/Model-fits/2025mcmc_names.rds")
+
+
 
 # load model fit/posteriors ----
 
