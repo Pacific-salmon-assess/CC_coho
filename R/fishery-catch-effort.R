@@ -78,3 +78,28 @@ c <- ggplot(data = CC_iREC, aes(x=Year, y = CPUE)) +
 
 cowplot::plot_grid(a, b, c,  labels="auto", ncol=2)
 ggsave("Figures/CC-rec-coho.jpeg", width = 9, height=6,units="in", dpi=600)
+
+
+# troll and iRec catch over time ----
+
+a_troll <- ggplot(data = areaFtroll, aes(x=Year, y = coho/1000)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") +
+  ylab("Coho catch (1000s)") +
+  theme_sleek() + 
+  ggtitle("North Coast Troll")
+
+# Reorder sub_category factor levels
+CC_iREC_catch$Disposition <- fct_rev(CC_iREC_catch$Disposition)
+
+b_iREC <- ggplot(data = CC_iREC_catch, aes(x=Year, y = coho_catch/1000, fill = Disposition)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") +
+  ylab("Coho catch (1000s)")  +
+  theme_sleek() +
+  theme(legend.position = c(0.75, 0.85))+ 
+  ggtitle("Central Coast recreational")+
+  scale_y_continuous(position = "right")
+
+cowplot::plot_grid(a_troll,b_iREC,  labels="", ncol=2)
+ggsave("Figures/NC-troll-CC-rec-coho.jpeg", width = 11, height=4,units="in", dpi=600)
