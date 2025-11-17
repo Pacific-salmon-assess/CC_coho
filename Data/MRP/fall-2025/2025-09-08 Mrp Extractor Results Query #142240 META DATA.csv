@@ -1,0 +1,593 @@
+﻿Name,Description
+(RL) MRP Record ID,"Unique record ID for each release record, used by MRP system."
+(RC) Unresolved Type ID,
+(RL) Tagcode,"For CWT releases: Unique tagcode on the coded wire tag used to tag the release group. 
+
+For Unassociated releases: Unique agency-specific identifier used to identify the release group."
+(RL) Species Code,"MRP Code defining the species of the release group. 
+
+This code is also called the Hart code as it indicates the page number in Hart's book of species."
+(RL) Species Name,Species of release group.
+(RL) Species PSC Code,PSC code defining the species of the release group.
+(RL) Run Code,Code for the season in which the majority of the broodstock of the release group leave the marine environment and enter fresh water to spawn.
+(RL) Related Group ID,Unique identifier used to identify related release groups.
+(RL) Related Group Type Code,Code defining the type of relationship between related releases.
+(RL) Reporting Agency Code,Code defining the agency responsible for reporting the release.
+(RL) Releasing Agency Code,Code defining the releasing agency.
+(RL) Program Code,"Code defining the type of enhancement program responsible for the release.
+
+Used only for Canadian releases."
+(RL) Project Name,The  Project name specified for the hatchery release.
+(RL) Project Code,"An code identify the OHEB Project, this is only used with some hatchery related releases."
+(RL) Coordinator Code,Code defining the tag co-ordinator for the release.
+(RL) Country Code,Code defining the country of release.
+(RL) Brood Year,Year when the fish in the release group were spawned.
+(RL) Release Year,"Year of release. 
+
+This value is the last release date year from the release date range. If the last release date year is unknown, it is the first release date year."
+(RL) Release Date - From,"First date when the fish were released (YYYY/MM/DD).
+
+If the release occurred on a single day, the first release date and the last release date will be the same. If only a portion of the first release date is known, the unknown month or day is blank. If the release occurred over more than one day but the first release date is unknown, it is null."
+(RL) Release Date - To,"Last date when the fish were released.
+
+If the release occurred on a single day, the first release date and the last release date will be the same. If only a portion of the last release date is known, the unknown month or day is blank. If the release occurred over more than one day but the last release date is unknown, it is null."
+(RL) Hatchery Site Code-Name,"Code and name of the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery Site Code (CDFO),"MRP code defining the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery PSC Location,"PSC combination code defining where the release group was raised.
+
+The PSC coding convention for geographic location codes is a 19 character code which consists of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)"
+(RL) Hatchery Site Name,"Name of the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery PSC Basin Name,"PSC Basin name of the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery PSC Basin Code,"PSC Basin code of the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery PSC Region Name,"PSC Region code of the site (project, hatchery or facility) where the release group was raised."
+(RL) Hatchery PSC Region Code,"PSC Region code of the site (project, hatchery or facility) where the release group was raised."
+(RL) Release Site Code-Name,Code and name of the site where the release group was raised.
+(RL) Release Site Code (CDFO),MRP code defining the site where the release group was released.
+(RL) Release PSC Location Code,"PSC combination code des defining where the release group was released.
+
+The PSC coding convention for geographic location codes is a 19 character code which consists of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)"
+(RL) Release Site Name,Name of the site where the release group was released.
+Release PSC Basin Name,PSC Basin name of the site where the release group was released.
+Release PSC Basin Code,PSC Basin code of the site where the release group was released.
+(RL) Release PSC Region Name,PSC Region code of the site where the release group was released.
+(RL) Release PSC Region Code,PSC Region code of the site where the release group was released.
+(RL) Stock Site Code-Name,Code and name of the site where the brood stock for the release group was taken.
+(RL) Stock Site Code (CDFO),MRP code defining the site where the brood stock for the release group was taken.
+(RL) Stock PSC Location Code,"PSC combination code defining where the brood stock for the release group was taken.
+
+The PSC coding convention for geographic location codes is a 19 character code which consists of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)"
+(RL) Stock Site Name,Name of the site where the brood stock for the release group was taken.
+(RL) Stock PSC Basin Name,PSC Basin name of the site where the release group was taken.
+(RL) Stock PSC Basin Code,PSC Basin code of the site where the release group was taken.
+(RL) Stock PSC Region Name,PSC Region code of the site where the release group was taken.
+(RL) Stock PSC Region Code,PSC Region code of the site where the release group was taken.
+(RL) Hatchery ProdArea (CDFO),Code defining the Production Area where the release group was raised.
+(RL) Release ProdArea (CDFO),Code defining the Production Area where the release group was released.
+(RL) Stock ProdArea (CDFO),Code defining the Production Area where the brood stock for the release group was taken.
+(RL) Hatchery Site Prov/State,Code defining the Province or State where the release group was raised.
+(RL) Release Site Prov/State,Code defining the Province or State where the release group was released.
+(RL) Stock Site Prov/State,Code defining the Province or State where the brood stock for the release group was taken.
+(RL) Analysis - Survival,"Code defining if the tagcode recoveries can be used for survival analysis.
+
+Used only for Canadian CWT releases."
+(RL) Analysis - Exploitation,"Code defining if the tagcode recoveries can be used for exploitation analysis.
+
+Used only for Canadian CWT releases."
+(RL) Analysis - Distribution,"Code defining if the tagcode recoveries can be used for distribution analysis.
+
+Used only for Canadian CWT releases."
+(RL) Integrity Code,Code defining the integrity of the study or expected survival of the release group.
+(RL) Mark Code - CWT 1st(v4),"Code defining the mark on the 1st group of CWT tagged fish, corresponding to the count value in Number With CWT 1st Mark.
+
+Note: 10/15/2005 - v4.0 Mark Code fields replace v3.2 Mark Code fields for all agencies. v3.2 Mark Code fields remain for CDFO for clarity."
+(RL) Mark Code - CWT 2nd(v4),"Code defining the mark on the 2nd group of CWT tagged fish, corresponding to the count value in Number With CWT 2nd Mark.
+
+Note: 10/15/2005 - v4.0 Mark Code fields replace v3.2 Mark Code fields for all agencies. v3.2 Mark Code fields remain for CDFO for clarity.
+
+Used only for CWT Releases."
+(RL) Mark Code -No CWT 1st(v4),"For CWT Releases: Code defining the mark on the 1st group of non-tagged fish in a CWT release, corresponding to the count value in Number No CWT 1st Mark.
+
+For Unassociated releases: Code defining the mark on the 1st group of non-tagged fish in an unassociated release, corresponding to the count value in Number NoCWT 1st Mark.
+
+Note: 10/15/2005 - v4.0 Mark Code fields replace v3.2 Mark Code fields for all agencies. v3.2 Mark Code fields remain for CDFO for clarity."
+(RL) Mark Code -No CWT 2nd(v4),"For CWT Releases: Code defining the mark on the 2nd group of non-tagged fish in a CWT release, corresponding to the count value in Number No CWT 2nd Mark.
+
+For Unassociated releases: Code defining the mark on the 2nd group of non-tagged fish in an unassociated release, corresponding to the count value in Number NoCWT 2nd Mark.
+
+Note: 10/15/2005 - v4.0 Mark Code fields replace v3.2 Mark Code fields for all agencies. v3.2 Mark Code fields remain for CDFO for clarity."
+(RL) Rearing Code,Code defining the rearing environment of the release group.
+(RL) Size - Length (mm),Average fork-length of fish in the release.
+(RL) Size - Weight (grams),Average weight of fish in the release.
+(RL) Stage Code,MRP code defining the stage of fish growth at the time of release.
+(RL) Stage PSC Code,PSC code defining the stage of fish growth at the time of release.
+(RL) Stock Code,Code defining the stock type of the release group.
+(RL) Strategy Code,Code defining the release strategy.
+(RL) Study Code,MRP code defining the purpose of tagging.
+(RL) Study PSC Code,PSC Code defining the purpose of tagging.
+(RL) Tag Reused,"Code defining whether the CWT tag has been reused.
+
+Used only for CWT releases."
+(RL) Tag Type Code,Code defining the type of tag wire used for tagging.
+(RL) Tag Seq Number - From,"Sequential Binary Tags: The sequential number associated with the first D3,D4 values on the tags used in the release group. 
+
+Sequential Decimal Tags: The sequential number on the first tag used in the release group.
+
+Used only for sequential CWT tags."
+(RL) Tag Seq Number - To,"Sequential Binary Tags: The sequential number associated with the last D3,D4 values on the tags used in the release group.
+
+Sequential Decimal Tags: The sequential number on the last tag used in the release group.
+
+Used only for sequential CWT tags."
+(RL) Comments,Comment on pertinent information regarding release.
+(RL) Num WithCWT Adclip,"Total number of fish in a CWT release with with a CWT tag and an adipose clip (AdCWT).
+
+Used only for CWT releases."
+(RL) Num WithCWT NoAdclip,"Total number of fish in a CWT release with a CWT tag and no adipose clip -- Total number of fish with a CWT tag only (CWTOnly).
+
+Used only for CWT releases"
+(RL) Num WithCWT UnknAD,"Total number of fish in a CWT release with with a CWT tag and an indeterminate adipose clip.
+
+Used only for CWT releases."
+(RL) Num NoCWT Adclip,"For CWT releases: Total number of fish in a CWT release with no CWT tag and an adipose clip -- Total number of fish with an adipose clip only (AdOnly); 
+
+For Unassociated releases: Total number of fish in an unassociated release with an adipose clip (AdOnly)."
+(RL) Num NoCWT NoAdclip,"For CWT Releases: Total number of fish in a CWT release with no CWT tag and no adipose clip (Unmarked).
+
+For Unassociated releases: Total number of fish in an unassociated release with no adipose clip (Unmarked)."
+(RL) Num NoCWT UnknAD,"For CWT releases: Total number of fish in a CWT release with no CWT tag and an indeterminate adipose clip; 
+
+For Unassociated releases: Total number of fish in an unassociated release with an indeterminate adipose clip."
+(RL) Num WithCWT 1st Mark (v4),"Number of fish in a CWT release with a CWT tag and with the 1st mark (Mark Code - With CWT 1st), corrected for tag loss and mortality.
+
+Used only for CWT releases.
+
+Note: 10/15/2005 - v4.0 Count fields replace v3.2 Count fields for all agencies. v3.2 Mark Code fields (WithCWT, Shed, NoCWT, Mark, Part Mark, NoMark) remain for CDFO for clarity."
+(RL) Num WithCWT 2nd Mark (v4),"Number of fish in a CWT release with a CWT tag and with the 2nd mark (Mark Code - With CWT 2nd), corrected for tag loss and mortality.
+
+Used only for CWT releases.
+
+Note: 10/15/2005 - v4.0 Count fields replace v3.2 Count fields for all agencies. v3.2 Mark Code fields (WithCWT, Shed, NoCWT, Mark, Part Mark, NoMark) remain for CDFO for clarity."
+(RL) Num NoCWT 1st Mark (v4),"For CWT releases: Number of associated fish in a CWT release with no CWT and with the first mark (Mark Code - No CWT 1st).
+
+For Unassociated releases: Number of fish in an unassociated release with the first mark (Mark Code - No CWT 1st).
+
+Note: 10/15/2005 - v4.0 Count fields replace v3.2 Count fields for all agencies. v3.2 Mark Code fields (WithCWT, Shed, NoCWT, Mark, Part Mark, NoMark) remain for CDFO for clarity."
+(RL) Num NoCWT 2nd Mark (v4),"For CWT releases: Number of associated fish in a CWT release with no CWT and with the 2nd (Mark Code - No CWT 2nd).
+
+For Unassociated releases: Number of fish in an unassociated release with the 2nd mark (Mark Code - No CWT 2nd).
+
+Note: 10/15/2005 - v4.0 Count fields replace v3.2 Count fields for all agencies. v3.2 Mark Code fields (WithCWT, Shed, NoCWT, Mark, Part Mark, NoMark) remain for CDFO for clarity."
+(RL) Total Released,"Total number of fish in the release group that were released.
+
+CWT releases: The total number is equal to the sum of the number of fish in the release with a CWT, adipose clipped or not clipped, and the number of fish with no CWT, adipose clipped or not clipped.  
+
+Unassociated releases: The total number is equal to the sum of the number of fish in the release which were adipose clipped  or not clipped."
+(RL) Percent Tagged,"Percentage of fish in the release that were tagged.
+
+This percentage is calculated from the Number With CWT and the Total Released values as follows:
+100 X Number With CWT / Total Released values
+
+Used only for CWT releases."
+(RL) Percent Tag Loss,"Percentage of tagged fish in the release which lost tags during the holding period.
+
+Used only for CWT releases."
+(RL) Tag Loss Days Held,"Number of days the tagged fish in the release were held before being examined for tag loss.
+
+Used only for CWT releases."
+(RL) Tag Loss Sample Size,"Number of fish in the release which were sampled to determine tag loss.
+
+Used only for CWT releases"
+(RL) Mrp Update By,User who performed last update or reload of release record.
+(RC) Tagcode,"Tagcode on the coded wire tag which was recovered from fish. 
+
+For Canadian Recoveries only, if the tagcode of a recovery is unknown, this field contains a ""non-tag"" code which indicates the reason the tagcode is unknown and the species. ""Non-tag"" codes are an alternate way to visually see the composition of a sample without needing to use the ""Tag Status Code"" field. Possible ""non-tag"" codes are:
+where ""nnn"" is the MRP species code (Hart Code):
+   NP-nnn (no pin) - corresponds to tag status code = 2
+        NPC-nnn (no pin, only the snout portion of the head forward of the eyes was received. CWT may have been lost in the field because not enough of the head was recovered. (""C""ut in front of eye)  - corresponds to tag status code = 2; has only been used since 1999
+        NPD-nnn (no pin, damaged head was received such that the CWT may have been lost)m - corresponds to tag status code = 2; has only been used since 1999
+        NPM-nnn (no pin,  found metallic grit or other material) - corresponds to tag status code = 2; has only been used since 1999
+   LP-nnn (lost pin)  - corresponds to tag status code = 3
+   BI-nnn (unreadable binary) - corresponds to tag status 4
+   CO-nnn (unreadable colour) - corresponds to tag status 4
+   RE-nnn (unreadable rare earth) - corresponds to tag status 4
+   NT-nnn (electronic detection beep positive sample identified but head not taken because fish was not adipose-clipped) - corresponds to tag status code = 5
+   ND-nnn (no data) - corresponds to tag status code = 8
+   AG-ag-nnn (agency-only blank wire, where 'ag' is the agency code on the blank wire) - corresponds to tag status code = 9
+   BL-nnn (blank wire) - corresponds to tag status code = 9"
+(RC) Species Code,"MRP Code defining the species of the recovery. 
+
+This code is also called the Hart code as it indicates the page number in Hart's book of species."
+(RC) Species Name,Species of the recovery.
+(RC) Species PSC Code,PSC code defining the species of the recovery.
+(RC) Sample Method ID (CDFO),Code defining the method with which the sample was collected.
+(RC) Sample Method Name (CDFO),The textual name of the method used to collect the sample.
+(RC) Sample Type Code,"PSC code defining the type of tag recovery.
+
+This code indicates the type of sample (in-sample or voluntary), fishery (sampled or unknown), catch (known or unknown), and awareness (available or unavailable)."
+(RC) Reporting Agency Code,Code defining the agency responsible for reporting the recovery.
+(RC) Sampling Agency Code,Code defining the agency responsible for recovering the fish containing tags.
+(RC) Run Year,"Year when the the run of the recovered fish returns. (YYYY). For run which crosses year boundaries, it is the year when the majority of run returns."
+(RC) Recovery Year,Year when the recovery occurred (YYYY).
+(RC) Recovery Month,Month when the recovery occurred (MM).
+(RC) Recovery Date,"Date when the recovery occurred (YYYY/MM/DD).
+
+If only a portion of the recovery date is known, the unknown month or day is blank."
+(RC) Recovery Date Type Code,Code defining the type of recovery date.
+(RC) Stat Week (MMW),"Code indicating the statistical week in which the recovery occurred.
+
+A statistical week is a calendar week of 7 days.  It is labelled by a three-digit code (MMW), where the first two digits (MM) indicate the calendar month and the last digit (W) indicates the week within the month.  Each month has 4 statistical weeks, except months 04, 07, and 10, which have 5 statistical weeks. 
+
+The dates which bound week a statistical week vary from one year to the next.  The date range is available from the Period Date Range.
+
+In most MRP recoveries, statistical weeks begin on a Sunday, but a statistical week may begin on a Monday.  The type of statistical week is available from the Period Type Code.
+
+Used only for commercial recoveries that were sampled with a statistical week sampling period type."
+(RC) Sample Period Code,MRP Code defining the sampling period in which the recovery occurred.
+(RC) Sample Period PSC Code,PSC Code defining the sampling period in which the recovery occurred.
+(RC) Sample Period Type Code,Code defining the type of sampling period in which the recovery occurred.
+(RC) Sample Period - From,First date (YYYY/MM/DD) of the period in which the sampling occurred.
+(RC) Sample Period - To,Last date (YYYY/MM/DD) of the period in which the sampling occurred.
+(RC) Catch Region Code,"Code defining the catch region in which the recovery occurred. 
+
+Used only for Canadian recoveries. For US recoveries, see also Fishery PSC Code and Catch PSC Location Code.
+
+Note: To sort this field numerically, also select the Catch Region Sort field.
+
+A catch region is a Canadian term which is defined as a bounded area comprised of a number of PFMA (Pacific Fishery Management Area Regulations)  areas, with a specific gear type.  It may also be a combined catch region, comprised of several catch regions. For example, catch from a troller fishing in several catch regions is reported as caught in a combined catch region.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) Catch Region Sort,"To sort the Catch Region Code field numerically:
+- Select this field in addition to the Catch Region Code
+- Sort on this field.
+
+Note: This field carries the same value as Catch Region Code with zero left-padding. For example, CR 1 is shown as 001; CR 99 is shown as 099."
+(RC) Catch Region Acronym,"Acronym defining the catch region in which the recovery occurred.
+
+Used only for Canadian recoveries. For US recoveries, see also Fishery PSC Code and Catch PSC Location Code.
+
+A catch region is a Canadian term which is defined as a bounded area comprised of a number of PFMA (Pacific Fishery Management Area Regulations)  areas, with a specific gear type.  It may also be a combined catch region, comprised of several catch regions. For example, catch from a troller fishing in several catch regions is reported as caught in a combined catch region.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) Catch Region Name,"Name of catch region in which the recovery occurred.
+
+Used only for Canadian recoveries. For US recoveries, see also Fishery PSC Code and Catch PSC Location Code.
+
+A catch region is a Canadian term which is defined as a bounded area comprised of a number of PFMA  (Pacific Fishery Management Area Regulations)  areas, with a specific gear type.  It may also be a combined catch region, comprised of several catch regions. For example, catch from a troller fishing in several catch regions is reported as caught in a combined catch region.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) MRP Area Code,"Code defining the MRP area in which the recovery occurred.
+
+Used only for Canadian recoveries. For US recoveries, see also Recovery PSC Location Code.
+
+Note: To sort this field numerically, also select the MRP Area Sort field.
+
+A MRP area is a Canadian term which is used to define a bounded area comprised of one or more PFMA (Pacific Fishery Management Area Regulations) areas, including any stream that flows into it.   A MRP area may also be a combined area comprised of several MRP areas.  For example, catch from a troller fishing in several MRP areas is reported as caught in a MRP stat-area.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) MRP Area Sort,"To sort the MRP Area Codes numerically & logically:
+- Select this field in addition to the MRP Area Code.
+- Sort on this field.
+
+Note: In general, this field carries the same value as MRP Area Code with zero left-padding.
+For example, 
+MRP Area 1 is sorted as 001.
+MRP Area 29 is sorted as 029.
+
+MRP Areas with subdistricts are shown with the subdistrict code in the 4th character to force them to sort numerically with the other MRP Areas.
+For example, 
+MRP Stat Area 2W is sorted as 002W.
+MRP Stat Area 19A is sorted as 019A.
+
+MRP Areas 'C' and 'FW' are sorted as '99C' and '9FW' respectively, to force them to the bottom of the Canadian grouping."
+(RC) MRP Area Name,"Name of MRP Area in which the recovery occurred.
+
+Used only for Canadian recoveries. For US recoveries, see also Recovery PSC Location Code.
+
+A MRP area is a Canadian term which is used to define a bounded area comprised of one or more PFMA (Pacific Fishery Management Area Regulations) areas, including any stream that flows into it.   A MRP area may also be a combined area comprised of several MRP areas.  For example, catch from a troller fishing in several MRP areas is reported as caught in a MRP stat-area.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) MRP SubArea Code,"Code defining the actual location where the recovery occurred. 
+
+Used only for Canadian commercial recoveries. For US recoveries, see also Recovery PSC Location Code.
+
+A MRP sub-area is a Canadian term which may be an actual geographical location or a bounded area comprised of one or more PFMA (Pacific Fishery Manage Area Regulations) sub-areas. An MRP sub-area may also be a combined sub-area, comprised of several MRP sub-areas.  For example, catch from a troller fishing in several sub-areas is reported as caught in a combined sub-area.
+
+The MRP coding convention for geographic areas is a hierarchical system consisting of three levels of increasing spatial resolution.  These levels are catch region, MRP area, and MRP sub-area.  Each catch region is comprised of a number of MRP areas, which in turn, are comprised of a number of MRP sub-areas."
+(RC) Sport Site Code,"Code defining where the sport recovery occurred.
+
+Used only for Canadian sport recoveries.For US recoveries, see Recovery PSC Location Code."
+(RC) Sport Site Name,"Name of the site where the sport recovery occurred.
+
+Used only for Canadian sport recoveries.For US recoveries, see Recovery PSC Location Code."
+(RC) Recovery Site TypeCode,"Combination code, consisting of the recovery site type followed by the recovery site code which uniquely identifies the location where the recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+Note, for escapement recoveries, do not use this field alone as a limiting criteria to select records since it may have a value for escapement or freshwater sport recoveries.  To select only escapement recoveries, use the recovery type field as a criteria field as well.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Rec Site TypeCode-Name,"Combination code, consisting of the recovery site type followed by the recovery site code, followed by the name of the location, separated by a dash (""-"") which uniquely identifies the location where the recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+Note, for escapement recoveries, do not use this field alone as a limiting criteria to select records since it may have a value for escapement or freshwater sport recoveries.  To select only escapement recoveries, use the recovery type field as a criteria field as well.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Rec Site Type,"Code defining the type of site where the escapement or freshwater sport recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+The recovery site type code must be viewed in the context of the MRP coding convention for escapement and freshwater sport recovery sites.  An escapement or freshwater sport recovery site is uniquely identified by a recovery site type code and a recovery site code.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Recovery Site Code,"Code defining where the escapement or freshwater sport recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+The recovery site code must be viewed in the context of the MRP coding convention for escapement and freshwater sport recovery sites.  An escapement or freshwater sport recovery site is uniquely identified by a recovery site type code and a recovery site code.
+
+Note, for escapement recoveries, do not use this field alone as a limiting criteria to select records since it may have a value for escapement or freshwater sport recoveries.  To select only escapement recoveries, use the recovery type field as a criteria field as well.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Recovery Site Name,"Name of the location where the escapement recovery or freshwater sport recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+The recovery site name does not uniquely identify the location where an escapement recovery or freshwater sport recovery occurred. A ""R"" recovery site type code and a ""H"" recovery site type code may have the same site name.
+
+Used only for escapement or freshwater sport recoveries.
+
+Note, for freshwater sport recoveries, this is derived from a table which maps the freshwater sport sites to freshwater recovery site codes.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Recovery Site ProdArea,"Code defining the Production Area where the escapement or freshwater sport recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+Note, for escapement recoveries, do not use this field alone as a limiting criteria to select records since it may have a value for escapement or freshwater sport recoveries.  To select only escapement recoveries, use the recovery type field as a criteria field as well.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes and production areas.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Recovery Site Prov/State,"Code defining the province or state of the site where the escapement or freshwater sport recovery occurred.
+
+Used only for Canadian escapement or freshwater sport recoveries.For US recoveries, see Recovery PSC Location Code.
+
+Note, for escapement recoveries, do not use this field alone as a limiting criteria to select records since it may have a value for escapement or freshwater sport recoveries.  To select only escapement recoveries, use the recovery type field as a criteria field as well.
+
+Note, for freshwater sport recoveries, this code is derived from a table which maps the freshwater sport sites to freshwater recovery site codes and provinces.  Note that It may not be present for all freshwater sport recoveries because not all freshwater sport sites have a direct match to a freshwater recovery site."
+(RC) Sampling Site Code,"Code defining where the recovery was sampled.
+
+Used only for Canadian commercial recoveries."
+(RC) PFMA SubArea Code,"Code defining the PFMA (Pacific Fishery Management Area Regulations) subarea where the recovery occurred.
+
+This code is combination code consisting of the the PFMA statistical area code followed by the PFMA sub-area code, separated by a dash (""-"").  
+
+Used only for Canadian marine sport recoveries only.
+
+This code is derived from a table which maps the marine sport sites to PFMA management units.  Note that It may not be present for all marine sport recoveries because not all marine sport sites have been mapped to PFMA management units.  This mapping is done only as requested by users."
+(RC) Recovery PSC Location,"PSC combination code defining where the recovery occurred.
+
+The PSC coding convention for geographic location codes is a 19-character code which consists of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)"
+(RC) Recovery PSC Location-L0,"PSC code defining where the recovery occurred - state or province. 
+
+This code is level 0 of the recovery PSC strip."
+(RC) Recovery PSC Location-L1,"PSC code defining where the recovery occurred - water type.
+
+This code is level 1 of the recovery PSC strip."
+(RC) Recovery PSC Location-L2,"PSC code defining where the recovery occurred - sector.
+
+This code is level 2 of the recovery PSC strip."
+(RC) Recovery PSC Location-L3,"PSC code defining where the recovery occurred - region.
+
+This code is level 3 of the recovery PSC strip."
+(RC) Recovery PSC Location-L4,"PSC code defining where the recovery occurred - area.
+
+This code is level 4 of the recovery PSC strip."
+(RC) Recovery PSC Location-L5,"PSC code defining where the recovery occurred - location.
+
+This code is level 5 of the recovery PSC strip."
+(RC) Recovery PSC Location-L6,"PSC code defining where the recovery occurred - sub-location.
+
+This code is level 6 of the recovery PSC strip."
+(RC) Estimation Level,"PSC code defining the geographic location of the sampling stratum.  
+
+The code identifies the level of the Recovery PSC Location Code which is the geographic location of the sampling area.  It must be viewed in the context of the PSC coding convention for geographic location codes, which is a 19-character code consiting of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)."
+(RC) Catch PSC Location,"PSC combination code defining the geographic location of the catch - the sampling stratum.  
+
+This code is derived from the Recovery PSC Location Code and the Estimation Level.  
+
+The PSC coding convention for geographic location codes is a 19-character code which consists of seven codes defining levels of decreasing spatial resolution.  These seven codes/levels are:
+
+level 0 - state or province:  column 1  (1 char)
+level 1 - water type:  column 2  (1 char)
+level 2 - sector:  column 3  (1 char)
+level 3 - region:  columns 4-5  (2 chars)
+level 4 - area:  columns 6-9  (4 chars)
+level 5 - location:  columns 10-16  (7 chars)
+level 6 - sub-location:  columns 17-19  (3 chars)"
+(RC) Sample Age Code,"MRP code defining the age of all fish in the sample.
+
+Used only for Canadian recoveries that are part of a sample that was stratified by age. For US recoveries, see also Sample Maturity Code.
+
+Note:  The ""(RC) Sample Age Code"" field is equivalent to the ""(RC) Sample Maturity Code"" field but exists in the database as it is a Canadian MRP Code while ""(RC) Sample Maturity Code"" is a PSC code.  Both fields are easily confused with the age of the recovery but they are, in fact, the age of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific age category. If you wish to query the recoveries for a specific age, select ""(RC) Age-Total"" or ""(RC) Age-Ocean as your criteria column."
+(RC) Sample Maturity Code,"PSC code defining the age of all fish in the sample.
+
+Used only for recoveries that are part of a sample that was stratified by age.
+
+Note:  The ""(RC) Sample Maturity Code"" field is equivalent to the ""(RC) Sample Age Code"" field but exists in the database as it is a PSC Code while ""(RC) Sample Maturity Code"" is a Canadian MRP code.  Both fields are easily confused with the age of the recovery but they are, in fact, the age of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific age category. If you wish to query the recoveries for a specific age, select ""(RC) Age-Total"" or ""(RC) Age-Ocean as your criteria column."
+(RC) Sample Length - From (mm),"Shortest length of all fish in the sample.
+
+Used only for recoveries that are part of a sample that was stratified by length of fish.
+
+Note: The ""(RC) Sample Length - From (mm)"" and ""(RC) Sample Length - To (mm)"" fields are easily confused with the length of the recovery but they are together, in fact, the length range of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific length range. If you wish to query the recoveries for a specific length, select ""(RC) Size - Length (mm)""."
+(RC) Sample Length - To (mm),"Longest length of all fish in the sample.
+
+Used only for recoveries that are part of a sample that was stratified by length of fish.
+
+Note: The ""(RC) Sample Length - From (mm)"" and ""(RC) Sample Length - To (mm)"" fields are easily confused with the length of the recovery but they are together, in fact, the length range of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific length range. If you wish to query the recoveries for a specific length, select ""(RC) Size - Length (mm)""."
+(RC) Sample Mark Code,"Code defining the mark on all fish in the sample.
+
+Used only for recoveries that are part of a sample that was stratified by mark.
+
+Note: The ""(RC) Sample Mark Code"" field is easily confused with the recorded mark of the recovery but it is, in fact, the recorded mark of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific mark code. If you wish to query the recoveries for a specific mark code, use ""(RC) Mark Code""."
+(RC) Sample Run Code,"Code defining the run season (the season in which the majority of the recovery sample leave the marine environment and enter fresh water to spawn) of all fish in the sample.
+
+Used only if the sampling period is not a seasonal run period  (Sample Period Type Code = '8', typically used for escapement recoveries) and the recoveries are part of a sample that was stratified by run.
+
+Note:  The ""(RC) Sample Run Code"" field is easily confused with the run of the recovery but it is in fact the run of all fish in the sample and will only have values in it if a sampling experiment was set up sample a specific run. There is no ""(RC) Run Code"" field on the recovery table, meaning that the run is not recorded for each recovery. The exception to this is  escapement recoveries, where the ""(RC) Sample Period Code"" field contains the run season and ""(RC) Sample Period Type Code""=8. For other recoveries, if you wish to query the a specific run code, you must assume that the recovery had the same run code as the release group and select ""(RL) Run Code"" as your criteria column."
+(RC) Sample Sex Code,"Code defining the sex of all fish in the sample.
+
+Used only for Canadian recoveries that are part of a sample that was stratified by sex. For US recoveries, see also Sample Maturity Code.
+
+Note: The ""(RC) Sample Sex Code"" field is easily confused with the sex of the recovery but it is, in fact, the sex of all fish in the sample and will only have values if the sampling experiment was set up to sample a specific sex. If you wish to query the recoveries for a specific sex code, use ""(RC) Sex Code""."
+(RC) Age - Total,"Total age of recovered fish. 
+
+This field is calculated from the Recovery Year and Release Brood Year values as follows:
+   Recovery Year - Release Brood Year"
+(RC) Age - Ocean,"Ocean age of recovered fish. 
+
+This field is calculated from the Recovery Year and Release Year values as follows:
+   Recovery Year - Release Year"
+(RC) Colour Code,"Code defining the flesh colour.
+
+Used only for Canadian Chinook recoveries."
+(RC) Delivery Code,"Code defining how the recovery arrived at a sampling site.
+
+Used only for Canadian commercial recoveries only."
+(RC) Fishery Adclip Selective,"Code defining if the fishery was selective on adipose clipped fish.
+
+Used only for Commercial and Sport recoveries.  Not used for Escapement recoveries.
+"
+(RC) Fishery PSC Code,PSC Code defining the fishery in which the recovery occurred.
+(RC) Gear Code,"MRP Code defining the gear used to catch the fish.
+
+Used only for Canadian commercial or sport recoveries. For US recoveries, see aslo Fishery PSC Code and Gear PSC Code."
+(RC) Gear PSC Code,"Agency-specific PSC Code defining the gear used to catch the fish.
+
+Note: There is significant discrepencies in the use and interpretation of this code across agencies."
+(RC) Gear Aggregate Code,"MRP Code defining the gear aggregate used to catch the fish: Troll, Net, Sport.
+
+Used only for Canadian commercial or sport recoveries. For US recoveries see also Fishery PSC Code and Gear PSC Code."
+(RC) Grade Code,"Code defining the grade category related to the weight of the recovered fish and the gear aggregate (Net or Troll) used to catch the fish.
+
+Used only for Canadian Chinook recoveries."
+(RC) Mark Code,Code defining the recorded marks on the recovered fish that were sampled for.  A fish may also have had other marks but they may not have been recorded by the sampler.
+(RC) Mark Condition Code,"Code defining the condition (regeneration) of the adipose and ventral fin marks on the recovered fish.
+
+This is a 3-part code. The first character represents the condition of the adipose mark.  The second character represents the condition of the left ventral mark. The last character represents the condition of the right ventral mark.
+
+Used only for Canadian recoveries."
+(RC) Otolith ID ,OTOLITH ID
+(RC) DNA ID,DNA ID
+(RC) Scale Book,"If scale samples were collected, the unique (across years) number printed on the scale book. Combined with the scale number, this provides a means of linking to the Scale Database.
+Note: Available for 1984 or later Canadian Commercial recoveries only."
+(RC) Scale Number,"If scale samples were collected, the scale number within the scale book. Combined with the scale book, this provides a means of linking to the Scale Database.
+Note: Available for 1984 or later Canadian Commercial recoveries only.The scale number within the scale book."
+(RC) Sex Code,PSC code defining the sex of the recovered fish.
+(RC) Sexual Maturity Code,MRP code defining the sex and the maturity of the recovered fish.
+(RC) Size - Length (mm),Length of the recovered fish.
+(RC) Size - Length Type Code,The type of length measurement - whether measurement is actual length or calculated length.
+(RC) Size - Length Method Code,The method used to determine the length measurement - what was actually measured.
+(RC) Size - Weight (kg),Weight of the recovered fish.
+(RC) Size - Weight Type Code,The type of weight measurement - whether weight measurment is actual weight or calculated weight.
+(RC) Size - Weight Method Code,The method used to determine the weight measurement - what was actually measured.
+(RC) Tag Condition Code,"Code defining the condition of the CWT tag when it was decoded in the head lab.
+
+Used only for Canadian recoveries."
+(RC) Tag Detection Code,Code defining the method used to detect the existence of a CWT tag in the recovered fish.
+(RC) Tag Placement Code,"Code defining the placement of the CWT tag in the recovered fish.
+
+Used only for Canadian recoveries."
+(RC) Tag Status Code,"Code defining the status of the CWT tag recovery following processing in the head lab and validation against the RELEASES data file.
+
+For Canadian recoveries only, If the tagcode of a recovery is unknown, the Tagcode field contains a ""non-tag"" code which indicates the reason the tagcode is unknown and the species.
+See the Tagcode description for more information regarding how tag status codes are mapped to ""non-tag"" codes in the Tagcode field."
+(RC) Tag Type Code,Code defining the type of CWT tag recovered.
+(RC) Tag Seq Number,"Sequential Binary Tags:  The sequential number associated with the D3 and D4 values on the recovered tag.
+
+Sequential Decimal Tags: The sequential number on the recovered tag.
+
+Used only for sequential CWT tags."
+(RC) Observed Number,Observed number of CWT tags this tag recovery represents within its sampling stratum.
+(RC) Estimated Number,"Estimated number of CWT tags this tag recovery represents within its sampling stratum.  The estimated number is calculated using adjusted recoveries, taking into account the lost pin, no pin and no data recoveries in the sample.
+
+The number of adjusted recoveries is calculated as follows:
+A= O X (1 + (LP/K+(ND X (K+LP)) / K X (K+LP+NP))), where O is the number of actual tag recoveries for particular stratum, K is the number of known (real) tagcodes recovered, LP is the number of lost pin recoveries, ND is the number of no-data recoveries and NP is the number of no-pin recoveries.
+
+The estimated number is calculated as follows:
+
+For troll or net recoveries:
+Estimated number = A X C/S, where, for a particular stratum,  where A is the number of adjusted recoveries, C is the total estimated catch, and S is the number of fish in the sample.
+
+For sport recoveries:
+E = A X ( C / (O* X S / MI ) ), where A is the number of adjusted recoveries, C is the total estimated catch, O* is the the number of heads with known tagcodes, lost-pins, and a portion of the no-datas turned into the decoding lab, S is the number of fish in the sample and MI is the incidence of Marked fish in the sample.
+
+For escapement recoveries:
+E = A X E/S, where A is the number of adjusted recoveries, E is the total estimated escapement, and S is the number of fish in the sample."
+(RC) Expanded Number,"Expanded number of CWT tags this tag recovery represents within its sampling stratum.
+
+This values is calculated from the 'Number With CWT' and 'Total Released' values from the Releases Table and the 'Estimated Number' value from Recovery Table as follows:
+
+Estimated Number * Total Released / Number With CWT"
+(RC) PSC Record ID,"Unique record ID for each recovery record, used for PSC data exchange purposes."
+(RC) Catch Sample ID,"Record ID of associated Catch/Sample record.
+
+Used only for recoveries that are part of a sample."
+(RC) MRP Recovery Source Code,Code defining the source of the recovery record.
+(RC) MRP Recovery Source RecID,Record ID in the source file for the recovery record.
+(RC) MRP Sample Source Code,"Code defining the source of the sample record.
+
+Used only for recoveries that are part of a sample."
+(RC) MRP Sample Source Rec ID,"Record ID in the source file for the sample record.
+
+Used only for recoveries that are part of a sample."
+(RC) MRP Update Date,Date of last MRP update or reload of recovery record.
+(RC) MRP Update By,"User who performed last update or reload of recovery record.
+
+LoadMRPRC - loaded from Old Fortran MRP System records
+LoadPSC40_RC - loaded directly from version 4.0 PSFMC records
+LoadPSC32_RC - loaded directly from version 3.2 PSFMC records
+LoadPSC31_RC - loaded directly from version 3.1 PSFMC records
+LoadPSC30_RC - loaded directly from version 3.0 PSFMC records"
+(RC) PSC Submission Date,"Date of last PSC submission of recovery record.
+
+Used only for external Agency recovery records."
+(RC) Strata ID,The ID for the Strata used to calculate the Estimated Number.
+(RC) MRP Fishery Code,The specific Canadian fishery that the recovery was collected in.  This field only applies to Canadian recoveries.
