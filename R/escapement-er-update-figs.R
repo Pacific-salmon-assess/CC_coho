@@ -18,10 +18,17 @@ er <- read.csv(here("Data/CO ERs by CUs.csv"))  |>
          `Canada (English 2018)` = Can_ER_E,
          Alaska = AK_ER_E)|>
   select(CU, Year, Alaska, `Canada (English 2018)`, `Canada (CCFN)`) |>
-  filter(CU %in% c("Hecate_Low","Douglas_Kitimat","North_Coast_Streams", "Bella_Coola_Dean","Rivers_Inlet")) |>
-  pivot_longer(cols = c(Alaska, `Canada (English 2018)`, `Canada (CCFN)`), names_to = "Fishery",values_to = "er")
+  filter(CU %in% c("Hecate_Low","North_Coast_Streams", "Bella_Coola_Dean")) |>
+  pivot_longer(cols = c(Alaska, `Canada (English 2018)`, `Canada (CCFN)`), names_to = "Fishery",values_to = "er") |>
+  mutate(
+    area = case_when(
+      CU == "Hecate_Low" ~ "Hecate Lowlands",
+      CU == "North_Coast_Streams" ~ "Inner Waters",
+      CU == "Bella_Coola_Dean" ~ "Central Coast (South)",
+    )
+  )
 
-er$CU_f <- factor(er$CU, levels = c("Douglas_Kitimat", "North_Coast_Streams", "Hecate_Low", "Bella_Coola_Dean", "Rivers_Inlet"))
+er$area_f <- factor(er$area, levels = c("Inner Waters", "Hecate Lowlands", "Central Coast (South)"))
 
 # escapement plot ----
 ggplot(esc, aes(x = Year, y = value, col = estimates)) + 
@@ -41,14 +48,14 @@ ggplot(er |> filter(Fishery != "Canada (English 2018)"), aes(x = Year, y = er, f
   geom_area() +
   xlab("Year") +
   ylab("Harvest rate") +
-  facet_wrap(~CU_f, ncol=2) +
+  facet_wrap(~area_f, ncol=1) +
   scale_fill_manual(values=c( "#E69F00", "#56B4E9")) +
   theme_sleek() +
-  theme(legend.position = c(0.75,0.15),
-        legend.title = element_text(size=11),
-        legend.text = element_text(size=10)) 
+  theme(legend.position = c(0.9,0.95),
+        legend.title = element_text(size=9),
+        legend.text = element_text(size=8)) 
 
-ggsave(here("Figures/er-reconstruction-CCFN.PNG"), width=10, height=6.5, units = "in")
+ggsave(here("Figures/er-reconstruction-CCFN.PNG"), width=6.5, height=6.5, units = "in")
 
 ggplot(er |> filter(Fishery != "Canada (CCFN)"), aes(x = Year, y = er, fill = Fishery)) + 
   geom_area() +

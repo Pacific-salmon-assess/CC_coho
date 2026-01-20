@@ -1,6 +1,8 @@
 library(tidyverse)
 library(here)
 library(ggsidekick)
+library(lme4)
+
 
 co_pops<-read.table(here("Data/coho_groups_2025.txt"),header=TRUE)
 SR.dat<-read.csv(here("Data/Coho_Brood_MASTER2025UpdateDQ.csv"), header=T)
@@ -194,14 +196,49 @@ pop_group_short_all <- pop_group |>
 
 pop_group_short_all$year_index <- pop_group_short_all$year-1999
 
+   
+
+dat_text <- data.frame(
+  label = c("-10%", "-59%", "-59%", "-40%", "-46%", "-64%", "-51%", "+1%"),
+  population   = c("green", "east_arm","west_arm","roscoe","quartcha","martin","elcho","cascade" )
+)
+
 ggplot(pop_group_short_all,aes(x = year, y = spawners)) +
-  geom_smooth(method="lm", color="grey") +
+  stat_smooth(formula=y~x, method="glm", color="grey", 
+              method.args = list(family = gaussian(link = 'log')),
+              na.rm=TRUE) +
   geom_point(size=2, aes(color=survey_quality))+
   xlab("Year") +
   ylab("Spawners") +
-  theme_minimal() +
-  facet_wrap(~population, scales = "free_y", ncol = 3)+
+  theme_sleek() +
+  facet_wrap(~population, scales = "free_y", ncol = 3,axes = "all_x")+
   theme(axis.title = element_text(size=10),
-        axis.text = element_text(size = 8))   
+        axis.text = element_text(size = 8),
+        legend.position = "none") + 
+  geom_text(
+    data    = dat_text,
+    mapping = aes(x = Inf, y = Inf, label = label),
+    hjust   = 1.2,
+    vjust   = 1.5,
+    color="grey50")
+ggsave("Figures/cc-spawner-trends.jpeg", width = 9, height=6,units="in", dpi=600)
 
-ggsave("Figures/cc-spawner-trends.jpeg", width = 10, height=5.5,units="in", dpi=600)
+# time trends for abundance based estimate systems ----
+
+model<-lmer(log(spawners)~year_index+(year_index|population),data=pop_group_short_all)
+model_s<-summary(model)
+
+main_coef <- model_s$coefficients[2,1]
+pop_coefs <- as.data.frame(ranef(model)) |>
+  filter(term == "year_index") |>
+  mutate(perc_change = round(as.numeric((exp((main_coef+condval)*(3*4))-1)*100)),
+         perc_change_up = round(as.numeric((exp((main_coef+condval+(condsd*1.96))*(3*4))-1)*100)),
+         perc_change_lwr = round(as.numeric((exp((main_coef+condval-(condsd*1.96))*(3*4))-1)*100)),
+         population = grp,
+         '% change (3-gen)' = perc_change,
+         '% change (3-gen) upper' = perc_change_up,
+         '% change (3-gen) lower' = perc_change_lwr)|> 
+  select(population,'% change (3-gen)','% change (3-gen) upper','% change (3-gen) lower')
+
+knitr::kable(pop_coefs, align = "l") 
+
