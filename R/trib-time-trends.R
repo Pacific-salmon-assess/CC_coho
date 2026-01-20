@@ -199,7 +199,8 @@ pop_group_short_all$year_index <- pop_group_short_all$year-1999
    
 
 dat_text <- data.frame(
-  label = c("-10%", "-59%", "-59%", "-40%", "-46%", "-64%", "-51%", "+1%"),
+  label = c("-10% (-40 to 35%)", "-59% (-77 to -28%)", "-59% (-76 to -32%)", "-40% (-60 to -10%)", "-46% (-68 to -10%)",
+            "-64% (-76 to -46%)", "-51% (-67 to -26%)", "+1% (-37 to 64%)"),
   population   = c("green", "east_arm","west_arm","roscoe","quartcha","martin","elcho","cascade" )
 )
 
@@ -218,10 +219,11 @@ ggplot(pop_group_short_all,aes(x = year, y = spawners)) +
   geom_text(
     data    = dat_text,
     mapping = aes(x = Inf, y = Inf, label = label),
-    hjust   = 1.2,
+    hjust   = 1.1,
     vjust   = 1.5,
-    color="grey50")
-ggsave("Figures/cc-spawner-trends.jpeg", width = 9, height=6,units="in", dpi=600)
+    color="grey50", 
+    size=3)
+ggsave("Figures/cc-spawner-trends.jpeg", width = 8, height=6,units="in", dpi=600)
 
 # time trends for abundance based estimate systems ----
 
