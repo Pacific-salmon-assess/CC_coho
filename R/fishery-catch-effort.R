@@ -428,3 +428,67 @@ ggplot(data = CC_iREC_all_ret_rel, aes(x=Month, y = CPUE, fill = Disposition)) +
 
 ggsave("Figures/CC-rec-coho-CPUE-finescale-lodge-charter.jpeg", width = 11, height=8,units="in", dpi=600)
 
+# fine scale iREC UNCALIBRATED----
+CC_iREC_catch <- iREC |>
+  filter(LOGISTICAL_AREA == "Central Coast",
+         ITEM == "Coho",
+         YEAR < 2026,
+         MONTH > 5,
+         MONTH < 10, 
+         AREA %in% c("Area 5", "Area 6", "Area 7", "Area 8", "Area 9")) |>
+  mutate(Year=YEAR,
+         Month=MONTH,
+         Area=AREA,
+         Disposition=DISPOSITION) |>
+  group_by(Year, Month, Area, Disposition) |>
+  summarise(coho_catch=sum(ESTIMATE, na.rm = T)) 
+
+CC_iREC_catch$Disposition <- fct_rev(CC_iREC_catch$Disposition)
+ggplot(data = CC_iREC_catch, aes(x=Month, y = coho_catch/1000, fill = Disposition)) +
+  geom_bar(stat = "identity") +
+  xlab("Month") +
+  ylab("Coho catch (1000s)")  +
+  facet_grid(Area~Year, scales="free_y") +
+  theme_sleek() +
+  theme(legend.position = "top",
+        legend.title = element_blank())+
+  scale_fill_brewer(palette = "Dark2")
+
+ggsave("Figures/CC-rec-coho-finescale-raw.jpeg", width = 11, height=8,units="in", dpi=600)
+
+
+CC_iREC_effort <- iREC |>
+  filter(LOGISTICAL_AREA == "Central Coast",
+         ITEM != "Coho",
+         YEAR < 2026,
+         MONTH > 5,
+         MONTH < 10, 
+         AREA %in% c("Area 5", "Area 6", "Area 7", "Area 8", "Area 9")) |>
+  mutate(Year=YEAR,
+         Month=MONTH,
+         Area=AREA,
+         Disposition=DISPOSITION) |>
+  group_by(Year, Month, Area) |>
+  summarise(effort=sum(ESTIMATE, na.rm = T)) 
+
+
+CC_iREC_all_catch <- CC_iREC_catch |>
+  group_by(Year, Month, Area) |>
+  summarise(coho_catch_total=sum(coho_catch, na.rm = T)) 
+
+CC_iREC_all_ret_rel <- left_join(CC_iREC_catch, CC_iREC_effort, by= c("Year", "Month", "Area")) |>
+  mutate(CPUE = coho_catch/effort)
+
+
+ggplot(data = CC_iREC_all_ret_rel, aes(x=Month, y = CPUE, fill = Disposition)) +
+  geom_bar(stat = "identity") +
+  xlab("Month") +
+  ylab("CPUE (coho/day)")  +
+  facet_grid(Area~Year, scales = "free_y") +
+  theme_sleek() +
+  geom_hline(yintercept = c(2,4),lty=2, col="grey") +
+  theme(legend.position = "top",
+        legend.title = element_blank())+
+  scale_fill_brewer(palette = "Dark2")
+
+ggsave("Figures/CC-rec-coho-CPUE-finescale-raw.jpeg", width = 11, height=8,units="in", dpi=600)
