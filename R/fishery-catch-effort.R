@@ -196,6 +196,58 @@ ggplot(data = CC_iREC_all_ret_rel, aes(x=Month, y = CPUE, fill = Disposition)) +
 
 ggsave("Figures/CC-rec-coho-CPUE-finescale.jpeg", width = 11, height=8,units="in", dpi=600)
 
+# iREC UNCALIBRATED ----
+CC_iREC_catch <- iREC |>
+  filter(LOGISTICAL_AREA == "Central Coast",
+         ITEM == "Coho",
+         YEAR < 2026) |>
+  mutate(Year=YEAR,
+         Disposition=DISPOSITION) |>
+  group_by(Year, Disposition) |>
+  summarise(coho_catch=sum(ESTIMATE, na.rm = T)) 
+
+CC_iREC_effort <- iREC |>
+  filter(LOGISTICAL_AREA == "Central Coast",
+         ITEM != "Coho",
+         YEAR < 2026) |>
+  mutate(Year=YEAR,
+         Disposition=DISPOSITION)|>
+  group_by(Year) |>
+  summarise(effort=sum(ESTIMATE, na.rm = T)) 
+
+CC_iREC <- left_join(CC_iREC_catch |>
+                       group_by(Year) |>
+                       summarise(coho_catch=sum(coho_catch, na.rm = T))
+                     , CC_iREC_effort, by= "Year") |>
+  mutate(CPUE = coho_catch/effort)
+
+CC_iREC_catch$Disposition <- fct_rev(CC_iREC_catch$Disposition)
+
+a <- ggplot(data = CC_iREC_catch, aes(x=Year, y = coho_catch/1000, fill = Disposition)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") +
+  ylab("Coho catch (1000s)")  +
+  theme_sleek() +
+  theme(legend.position = c(0.7, 0.9),
+        legend.title = element_blank())+
+  scale_fill_brewer(palette = "Dark2")
+
+b <- ggplot(data = CC_iREC, aes(x=Year, y = effort)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") +
+  ylab("Effort (days)") +
+  theme_sleek() 
+
+c <- ggplot(data = CC_iREC, aes(x=Year, y = CPUE)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") +
+  ylab("CPUE (coho/fisher/day)") +
+  theme_sleek() 
+
+cowplot::plot_grid(a, b, c,  labels="auto", ncol=2)
+ggsave("Figures/CC-rec-coho-raw.jpeg", width = 9, height=6,units="in", dpi=600)
+
+
 # iREC by type non guided non lodge----
 CC_iREC_catch <- iREC |>
   filter(LOGISTICAL_AREA == "Central Coast",
@@ -428,7 +480,7 @@ ggplot(data = CC_iREC_all_ret_rel, aes(x=Month, y = CPUE, fill = Disposition)) +
 
 ggsave("Figures/CC-rec-coho-CPUE-finescale-lodge-charter.jpeg", width = 11, height=8,units="in", dpi=600)
 
-# fine scale iREC UNCALIBRATED----
+# fine scale iREC UNCALIBRATED ----
 CC_iREC_catch <- iREC |>
   filter(LOGISTICAL_AREA == "Central Coast",
          ITEM == "Coho",
