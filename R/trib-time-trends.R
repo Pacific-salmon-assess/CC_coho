@@ -244,3 +244,55 @@ pop_coefs <- as.data.frame(ranef(model)) |>
 
 knitr::kable(pop_coefs, align = "l") 
 
+# time trends for abundance based estimate systems HECATE STRAIT MAINLAND ----
+pop_group_short_all_HSM <- pop_group |>
+  filter(year>2000,
+         population %in% c("belowe_ck","quaal", "sylvia_ck")) |>
+  select(year, group,population, survey_quality,spawners, returns)
+
+
+pop_group_short_all_HSM$year_index <- pop_group_short_all_HSM$year-1999
+model<-lmer(log(spawners)~year_index+(year_index|population),data=pop_group_short_all_HSM)
+model_s<-summary(model)
+
+main_coef <- model_s$coefficients[2,1]
+pop_coefs <- as.data.frame(ranef(model)) |>
+  filter(term == "year_index") |>
+  mutate(perc_change = round(as.numeric((exp((main_coef+condval)*(3*4))-1)*100)),
+         perc_change_up = round(as.numeric((exp((main_coef+condval+(condsd*1.96))*(3*4))-1)*100)),
+         perc_change_lwr = round(as.numeric((exp((main_coef+condval-(condsd*1.96))*(3*4))-1)*100)),
+         population = grp,
+         '% change (3-gen)' = perc_change,
+         '% change (3-gen) upper' = perc_change_up,
+         '% change (3-gen) lower' = perc_change_lwr)|> 
+  select(population,'% change (3-gen)','% change (3-gen) upper','% change (3-gen) lower')
+
+knitr::kable(pop_coefs, align = "l") 
+
+# abundance based estimates trends HECATE STRAIT MAINLAND ----
+dat_text <- data.frame(
+  label = c("-64% (-62 to 65%)", "-27% (-22 to -31%)", "-68% (-66 to -69%)"),
+  population   = c("belowe_ck","quaal", "sylvia_ck")
+)
+
+ggplot(pop_group_short_all_HSM,aes(x = year, y = spawners)) +
+  stat_smooth(formula=y~x, method="glm", color="grey", 
+              method.args = list(family = gaussian(link = 'log')),
+              na.rm=TRUE) +
+  geom_point(size=2, aes(color=survey_quality))+
+  xlab("Year") +
+  ylab("Spawners") +
+  theme_sleek() +
+  facet_wrap(~population, scales = "free_y", ncol = 3,axes = "all_x")+
+  theme(axis.title = element_text(size=10),
+        axis.text = element_text(size = 8),
+        legend.position = "none") + 
+  geom_text(
+    data    = dat_text,
+    mapping = aes(x = Inf, y = Inf, label = label),
+    hjust   = 1.1,
+    vjust   = 1.5,
+    color="grey50", 
+    size=3)
+ggsave("Figures/cc-HSM-CU-spawner-trends.jpeg", width = 8, height=6,units="in", dpi=600)
+
